@@ -1,1 +1,6 @@
-<p>welcome works!</p>
+<h2>Hi folks</h2>
+
+<h4>Roles</h4>
+<ul *ngIf="isLoggedIn">
+  <li *ngFor="let role of userRoles">{{role}}</li>
+</ul>

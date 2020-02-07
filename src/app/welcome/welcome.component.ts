@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {KeycloakService} from 'keycloak-angular';
 
 @Component({
   selector: 'app-welcome',
@@ -7,9 +8,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class WelcomeComponent implements OnInit {
 
-  constructor() { }
+  isLoggedIn = false;
+
+  constructor(private keycloakService: KeycloakService) {
+  }
 
   ngOnInit() {
+    this.keycloakService.isLoggedIn().then(r => this.isLoggedIn = r);
+  }
+
+  get userRoles(): string[] {
+    return this.keycloakService.getUserRoles(true);
   }
 
 }
