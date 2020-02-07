@@ -4,3 +4,11 @@
 <ul *ngIf="isLoggedIn">
   <li *ngFor="let role of userRoles">{{role}}</li>
 </ul>
+
+<h4>Links</h4>
+<div *ngFor="let container of linkContainers | async">
+  <p>{{container.category}}</p>
+  <ul>
+    <li *ngFor="let link of container.links">{{link.text}}</li>
+  </ul>
+</div>

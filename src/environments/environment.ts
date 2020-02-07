@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  keycloakConfigLocation: '/assets/keycloak.json'
+  keycloakConfigLocation: '/assets/keycloak.json',
+  linkmanBaseUrl: 'https://api.dev.bremersee.org/linkman'
 };
 
 /*

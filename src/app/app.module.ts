@@ -4,6 +4,7 @@ import {DoBootstrap, NgModule} from '@angular/core';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 import {AppRoutingModule} from './app-routing.module';
+import {HttpClientModule} from '@angular/common/http';
 import {AppComponent} from './app.component';
 import {WelcomeComponent} from './welcome/welcome.component';
 import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
@@ -23,6 +24,7 @@ const keycloakService = new KeycloakService();
   imports: [
     KeycloakAngularModule,
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     NgbModule
   ],

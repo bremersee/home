@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {KeycloakService} from 'keycloak-angular';
+import {LinkContainer, LinkService} from '../shared/service/link.service';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-welcome',
@@ -10,11 +12,14 @@ export class WelcomeComponent implements OnInit {
 
   isLoggedIn = false;
 
-  constructor(private keycloakService: KeycloakService) {
+  linkContainers: Observable<Array<LinkContainer>>;
+
+  constructor(private keycloakService: KeycloakService, private linkService: LinkService) {
   }
 
   ngOnInit() {
     this.keycloakService.isLoggedIn().then(r => this.isLoggedIn = r);
+    this.linkContainers = this.linkService.getLinkContainers();
   }
 
   get userRoles(): string[] {
