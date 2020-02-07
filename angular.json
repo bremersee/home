@@ -21,6 +21,7 @@
             "aot": false,
             "assets": [
               "src/favicon.ico",
+              "src/silent-check-sso.html",
               "src/assets"
             ],
             "styles": [

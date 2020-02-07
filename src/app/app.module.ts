@@ -41,7 +41,9 @@ export class AppModule implements DoBootstrap {
       await keycloakService.init({
         config: keycloakConfig,
         initOptions: {
-          flow: 'implicit'
+          flow: 'implicit',
+          onLoad: 'check-sso',
+          silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html'
         }
       });
       app.bootstrap(AppComponent);
