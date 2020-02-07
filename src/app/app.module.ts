@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule, DoBootstrap, ApplicationRef} from '@angular/core';
+import {DoBootstrap, NgModule} from '@angular/core';
 
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
@@ -36,14 +36,14 @@ const keycloakService = new KeycloakService();
 })
 export class AppModule implements DoBootstrap {
   async ngDoBootstrap(app) {
-    const {keycloakConfig} = environment;
     try {
       await keycloakService.init({
-        config: keycloakConfig,
+        config: window.location.origin + environment.keycloakConfigLocation,
         initOptions: {
-          flow: 'implicit',
+          flow: 'standard',
           onLoad: 'check-sso',
-          silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html'
+          silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+          pkceMethod: 'S256'
         }
       });
       app.bootstrap(AppComponent);
