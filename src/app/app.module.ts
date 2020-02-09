@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {DoBootstrap, NgModule} from '@angular/core';
+import {DoBootstrap, ErrorHandler, NgModule} from '@angular/core';
 
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
@@ -11,6 +11,10 @@ import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
 import {HeaderComponent} from './header/header.component';
 import {AuthComponent} from './header/auth/auth.component';
 import {environment} from '../environments/environment';
+import { CategoriesComponent } from './categories/categories.component';
+import { LinksComponent } from './links/links.component';
+import { SnackbarComponent } from './shared/snackbar/snackbar.component';
+import {GlobalErrorHandler} from './error/global-error-handler';
 
 const keycloakService = new KeycloakService();
 
@@ -19,7 +23,10 @@ const keycloakService = new KeycloakService();
     AppComponent,
     WelcomeComponent,
     HeaderComponent,
-    AuthComponent
+    AuthComponent,
+    CategoriesComponent,
+    LinksComponent,
+    SnackbarComponent
   ],
   imports: [
     KeycloakAngularModule,
@@ -29,6 +36,10 @@ const keycloakService = new KeycloakService();
     NgbModule
   ],
   providers: [
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler
+    },
     {
       provide: KeycloakService,
       useValue: keycloakService

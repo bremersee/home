@@ -1,0 +1,7 @@
+<div *ngIf="show" @state [ngClass]="classes()">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"
+          (click)="hideMessage()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <span>{{message}}</span>
+</div>

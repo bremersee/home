@@ -1,0 +1,17 @@
+<h2>Categories</h2>
+<table class="table table-responsive-xl mt-4">
+  <thead>
+  <tr>
+    <th scope="col">Name</th>
+    <th scope="col">Order</th>
+    <th scope="col"></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let category of categories | async; let i = index">
+    <td>{{category.name}}</td>
+    <td>{{category.order}}</td>
+    <td></td>
+  </tr>
+  </tbody>
+</table>

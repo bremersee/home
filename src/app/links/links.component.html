@@ -1,0 +1,19 @@
+<h2>Links</h2>
+<table class="table table-responsive-xl mt-4">
+  <thead>
+  <tr>
+    <th scope="col">Name</th>
+    <th scope="col">Link</th>
+    <th scope="col">Order</th>
+    <th scope="col"></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let link of links | async; let i = index">
+    <td>{{link.text}}</td>
+    <td>{{link.href}}</td>
+    <td>{{link.order}}</td>
+    <td></td>
+  </tr>
+  </tbody>
+</table>

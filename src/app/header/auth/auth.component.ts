@@ -8,10 +8,10 @@ import {KeycloakService} from 'keycloak-angular';
 })
 export class AuthComponent implements OnInit {
 
+  isLoggedIn = false;
+
   constructor(private keycloakService: KeycloakService) {
   }
-
-  isLoggedIn = false;
 
   ngOnInit() {
     this.keycloakService.isLoggedIn().then(r => this.isLoggedIn = r);
@@ -19,21 +19,7 @@ export class AuthComponent implements OnInit {
 
   async login() {
     await this.keycloakService.login();
-    /*
-    const option: Keycloak.KeycloakLoginOptions = {
-      redirectUri: 'http://localhost:4200'
-    };
-    this.keycloakService.login(option).then(() => {
-      this.ngOnInit();
-    });
-    */
   }
-
-  /*
-  async isLoggedIn() {
-    return await this.keycloakService.isLoggedIn();
-  }
-  */
 
   async logout() {
     await this.keycloakService.logout();
