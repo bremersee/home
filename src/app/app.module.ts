@@ -15,6 +15,10 @@ import { CategoriesComponent } from './categories/categories.component';
 import { LinksComponent } from './links/links.component';
 import { SnackbarComponent } from './shared/snackbar/snackbar.component';
 import {GlobalErrorHandler} from './error/global-error-handler';
+import { AddCategoryComponent } from './categories/add-category/add-category.component';
+import { AddLinkComponent } from './links/add-link/add-link.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ReactiveFormsModule} from '@angular/forms';
 
 const keycloakService = new KeycloakService();
 
@@ -26,13 +30,17 @@ const keycloakService = new KeycloakService();
     AuthComponent,
     CategoriesComponent,
     LinksComponent,
-    SnackbarComponent
+    SnackbarComponent,
+    AddCategoryComponent,
+    AddLinkComponent
   ],
   imports: [
-    KeycloakAngularModule,
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
+    ReactiveFormsModule,
     AppRoutingModule,
+    KeycloakAngularModule,
     NgbModule
   ],
   providers: [

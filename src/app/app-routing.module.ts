@@ -5,11 +5,20 @@ import {CategoriesComponent} from './categories/categories.component';
 import {AppAuthGuard} from './app.authguard';
 import {environment} from '../environments/environment';
 import {LinksComponent} from './links/links.component';
+import {AddCategoryComponent} from './categories/add-category/add-category.component';
 
 const routes: Routes = [
   {
     path: 'categories',
     component: CategoriesComponent,
+    canActivate: [AppAuthGuard],
+    data: {
+      roles: environment.adminRoles
+    }
+  },
+  {
+    path: 'categories/add',
+    component: AddCategoryComponent,
     canActivate: [AppAuthGuard],
     data: {
       roles: environment.adminRoles

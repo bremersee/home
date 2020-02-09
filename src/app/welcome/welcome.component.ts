@@ -14,10 +14,14 @@ export class WelcomeComponent implements OnInit {
 
   linkContainers: Observable<Array<LinkContainer>>;
 
+  lang: string;
+
   constructor(private keycloakService: KeycloakService, private linkService: LinkService) {
   }
 
   ngOnInit() {
+    // @ts-ignore
+    this.lang = navigator.language || navigator.userLanguage;
     this.keycloakService.isLoggedIn().then(r => this.isLoggedIn = r);
     this.linkContainers = this.linkService.getLinkContainers();
   }

@@ -18,9 +18,10 @@ export class LinkService {
   constructor(private http: HttpClient) {
   }
 
-  getLinkContainers(): Observable<Array<LinkContainer>> {
+  getLinkContainers(language?: string): Observable<Array<LinkContainer>> {
     const httpHeaders = new HttpHeaders()
-    .set('Accept', 'application/json');
+    .set('Accept', 'application/json')
+    .set('Accept-Language', language === null || language === undefined || language.length < 2 ? 'en' : language);
     return this.http.get<Array<LinkContainer>>(`${this.baseUrl}/api/public/links`, {
       headers: httpHeaders
     });
