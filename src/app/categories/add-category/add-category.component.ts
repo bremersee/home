@@ -5,8 +5,10 @@ import {CategoryService} from '../../shared/service/category.service';
 import {Router} from '@angular/router';
 import {SnackbarService} from '../../shared/snackbar/snackbar.service';
 import {LanguageService} from '../../shared/service/language.service';
-import {Observable} from 'rxjs';
 import {LocaleDescription} from '../../shared/model/locale-description';
+import {Observable} from 'rxjs';
+import {faPlusSquare} from '@fortawesome/free-regular-svg-icons';
+// import {faPlusSquare} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-add-category',
@@ -15,16 +17,13 @@ import {LocaleDescription} from '../../shared/model/locale-description';
 })
 export class AddCategoryComponent implements OnInit {
 
+  plusIcon = faPlusSquare;
+
   language: string;
 
   languages: Observable<Array<LocaleDescription>>;
 
   form: FormGroup;
-
-  translationItems: {
-    language: string;
-    value: string;
-  }[];
 
   constructor(private router: Router,
               private formBuilder: FormBuilder,
@@ -37,20 +36,31 @@ export class AddCategoryComponent implements OnInit {
     // @ts-ignore
     this.language = navigator.language || navigator.userLanguage;
     this.languages = this.languageService.getAvailableLanguages(this.language);
+  }
 
-
-    this.translationItems = [];
-    this.form = this.formBuilder.group({
-      order: [0, Validators.required],
-      name: ['', Validators.required],
-      translations: this.formBuilder.array([this.createTranslationItem(this.language)]),
-      matchesGuest: [false]
-    });
+  buildForm(availableLanguages: Array<LocaleDescription>): FormGroup {
+    if (this.form === null || this.form === undefined) {
+      const languageCodes = new Array<string>();
+      for (const language of availableLanguages) {
+        languageCodes.push(language.locale);
+      }
+      const selectedLanguage = this.language === null || this.language === undefined || this.language.length < 2
+      || languageCodes.indexOf(this.language.substr(0, 2)) < 0
+        ? 'en'
+        : this.language.substr(0, 2);
+      this.form = this.formBuilder.group({
+        order: [0, Validators.required],
+        name: ['', Validators.required],
+        translations: this.formBuilder.array([this.createTranslationItem(selectedLanguage)]),
+        matchesGuest: [false]
+      });
+    }
+    return this.form;
   }
 
   createTranslationItem(languageCode?: string): FormGroup {
     return this.formBuilder.group({
-      translation: [languageCode === null || languageCode === undefined ? '' : languageCode],
+      language: [languageCode === null || languageCode === undefined ? '' : languageCode],
       value: ['']
     });
   }

@@ -19,6 +19,10 @@ import { AddCategoryComponent } from './categories/add-category/add-category.com
 import { AddLinkComponent } from './links/add-link/add-link.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ReactiveFormsModule} from '@angular/forms';
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {library} from '@fortawesome/fontawesome-svg-core';
+import {fas} from '@fortawesome/free-solid-svg-icons';
+import {far} from '@fortawesome/free-regular-svg-icons';
 
 const keycloakService = new KeycloakService();
 
@@ -41,7 +45,8 @@ const keycloakService = new KeycloakService();
     ReactiveFormsModule,
     AppRoutingModule,
     KeycloakAngularModule,
-    NgbModule
+    NgbModule,
+    FontAwesomeModule
   ],
   providers: [
     {
@@ -56,6 +61,11 @@ const keycloakService = new KeycloakService();
   entryComponents: [AppComponent]
 })
 export class AppModule implements DoBootstrap {
+
+  constructor() {
+    library.add(fas, far);
+  }
+
   async ngDoBootstrap(app) {
     try {
       await keycloakService.init({

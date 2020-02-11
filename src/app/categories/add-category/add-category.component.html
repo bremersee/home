@@ -6,60 +6,67 @@
     <a routerLink="/categories">Back</a>
   </div>
 </div>
-<form [formGroup]="form" (ngSubmit)="addCategory()">
-  <div class="form-group">
-    <label for="order">Sort order</label>
-    <input type="number" class="form-control"
-           [ngClass]="form.get('order').errors ? 'is-invalid' : ''"
-           id="order" name="order"
-           aria-describedby="orderHelp"
-           formControlName="order">
-    <small id="orderHelp" class="form-text text-muted">Please type in the sort order value.</small>
-  </div>
 
-  <div class="form-group">
-    <label for="name">Name</label>
-    <input type="text" class="form-control"
-           [ngClass]="form.get('name').errors ? 'is-invalid' : ''"
-           id="name" name="name"
-           aria-describedby="nameHelp" placeholder="Category name"
-           formControlName="name">
-    <small id="nameHelp" class="form-text text-muted">Please type in the category name.</small>
-  </div>
+<ng-container *ngIf="languages | async as availableLanguages">
+  <form [formGroup]="buildForm(availableLanguages)" (ngSubmit)="addCategory()">
+    <div class="form-group">
+      <label for="order">Sort order</label>
+      <input type="number" class="form-control"
+             [ngClass]="form.get('order').errors ? 'is-invalid' : ''"
+             id="order" name="order"
+             aria-describedby="orderHelp"
+             formControlName="order">
+      <small id="orderHelp" class="form-text text-muted">Please type in the sort order value.</small>
+    </div>
 
-  <div class="form-group">
-    <label>Translations</label> <!-- formArrayName="translations" -->
-    <div formArrayName="translations"
-         *ngFor="let item of translations.controls; let i=index">
-      <div [formGroupName]="i" class="form-row"> <!-- [formGroupName]="i"  -->
-        <div class="col">
-          <select class="form-control" formArrayName="language">
-            <option *ngFor="let lang of languages | async" value="{{lang.locale}}">
-              {{lang.description}}
-            </option>
-          </select>
-        </div>
-        <div class="col">
-          <input class="form-control" formArrayName="value" type="text">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control"
+             [ngClass]="form.get('name').errors ? 'is-invalid' : ''"
+             id="name" name="name"
+             aria-describedby="nameHelp" placeholder="Category name"
+             formControlName="name">
+      <small id="nameHelp" class="form-text text-muted">Please type in the category name.</small>
+    </div>
+
+    <div class="form-group">
+      <label>Translations</label> <!-- formArrayName="translations" -->
+      <div formArrayName="translations"
+           *ngFor="let control of translations.controls; let i=index">
+        <div [formGroupName]="i" class="form-row">
+          <div class="col">
+            <select class="form-control" formControlName="language">
+              <option *ngFor="let lang of availableLanguages" value="{{lang.locale}}">
+                {{lang.description}}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <input class="form-control" formControlName="value" type="text">
+          </div>
+          <div class="col">
+            <fa-icon [icon]="plusIcon"></fa-icon>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="form-check">
-    <input class="form-check-input" type="checkbox" id="matchesGuest" name="matchesGuest"
-           formControlName="matchesGuest">
-    <label class="form-check-label" for="matchesGuest">
-      Matches guest
-    </label>
-  </div>
-
-  <div class="row pt-4 pb-5 ml-2">
-    <div class="flex-column pr-2">
-      <button type="submit" class="btn btn-primary"
-              [disabled]="!form.valid">
-        Add category
-      </button>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="matchesGuest" name="matchesGuest"
+             formControlName="matchesGuest">
+      <label class="form-check-label" for="matchesGuest">
+        Matches guest
+      </label>
     </div>
-  </div>
-</form>
+
+    <div class="row pt-4 pb-5 ml-2">
+      <div class="flex-column pr-2">
+        <button type="submit" class="btn btn-primary"
+                [disabled]="!form.valid">
+          Add category
+        </button>
+      </div>
+    </div>
+  </form>
+</ng-container>
+
