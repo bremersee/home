@@ -1,6 +1,8 @@
 import {AccessControlList} from './access-control-list';
+import {Translation} from './translation';
 
 export {AccessControlList} from './access-control-list';
+export {Translation} from './translation';
 
 export interface LinkSpecification {
 
@@ -16,10 +18,10 @@ export interface LinkSpecification {
 
   text: string;
 
-  textTranslations?: Map<string, string>;
+  textTranslations?: Array<Translation>;
 
   description?: string;
 
-  descriptionTranslations?: Map<string, string>;
+  descriptionTranslations?: Array<Translation>;
 
 }

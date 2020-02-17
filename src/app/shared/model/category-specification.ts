@@ -1,3 +1,7 @@
+import {Translation} from './translation';
+
+export {Translation} from './translation';
+
 export interface CategorySpecification {
 
   id?: string;
@@ -6,7 +10,7 @@ export interface CategorySpecification {
 
   name: string;
 
-  translations?: Map<string, string>;
+  translations?: Array<Translation>;
 
   matchesGuest?: boolean;
 
