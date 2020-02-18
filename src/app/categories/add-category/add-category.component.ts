@@ -58,6 +58,10 @@ export class AddCategoryComponent implements OnInit {
     return this.form;
   }
 
+  addTranslation(): void {
+    (this.form.get('translations') as FormArray).controls.push(this.createTranslationItem());
+  }
+
   createTranslationItem(languageCode?: string): FormGroup {
     return this.formBuilder.group({
       language: [languageCode === null || languageCode === undefined ? '' : languageCode],
