@@ -62,6 +62,20 @@ export class AddCategoryComponent implements OnInit {
     return this.form;
   }
 
+  createTranslationItem(languageCode?: string): FormGroup {
+    return this.formBuilder.group({
+      languageSelector: [languageCode === null || languageCode === undefined ? '' : languageCode],
+      language: [languageCode === null || languageCode === undefined ? '' : languageCode],
+      value: ['']
+    });
+  }
+
+  createMatchesItem(): FormGroup {
+    return this.formBuilder.group({
+      value: ['']
+    });
+  }
+
   get translations(): FormArray {
     return this.form.get('translations') as FormArray;
   }
@@ -95,20 +109,6 @@ export class AddCategoryComponent implements OnInit {
     this.matches(formArrayName).controls.splice(index, 1);
   }
 
-  createTranslationItem(languageCode?: string): FormGroup {
-    return this.formBuilder.group({
-      languageSelector: [languageCode === null || languageCode === undefined ? '' : languageCode],
-      language: [languageCode === null || languageCode === undefined ? '' : languageCode],
-      value: ['']
-    });
-  }
-
-  createMatchesItem(): FormGroup {
-    return this.formBuilder.group({
-      value: ['']
-    });
-  }
-
   onKeyTranslationValue(event: any, index: number): void {
     if (event.key === 'Enter' && !this.isAddTranslationButtonDisabled(index)) {
       this.addTranslation();
@@ -123,13 +123,11 @@ export class AddCategoryComponent implements OnInit {
 
   fromLanguageSelectorToLanguage(index: number): void {
     const value = this.translations.controls[index].get('languageSelector').value;
-    console.error('Value = ' + value);
     this.translations.controls[index].get('language').setValue(value);
   }
 
   fromLanguageToLanguageSelector(index: number): void {
     const value = this.translations.controls[index].get('language').value;
-    console.error('Value = ' + value);
     this.translations.controls[index].get('languageSelector').setValue(value);
   }
 
