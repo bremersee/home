@@ -1,14 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CategorySpecification} from '../../shared/model/category-specification';
+import {CategorySpecification, Translation} from '../../shared/model/category-specification';
 import {CategoryService} from '../../shared/service/category.service';
 import {Router} from '@angular/router';
 import {SnackbarService} from '../../shared/snackbar/snackbar.service';
 import {LanguageService} from '../../shared/service/language.service';
 import {LocaleDescription} from '../../shared/model/locale-description';
 import {Observable} from 'rxjs';
-import {faPlusSquare} from '@fortawesome/free-regular-svg-icons';
-// import {faPlusSquare} from '@fortawesome/free-solid-svg-icons';
+import {faMinusSquare, faPlusSquare} from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-add-category',
@@ -18,6 +17,8 @@ import {faPlusSquare} from '@fortawesome/free-regular-svg-icons';
 export class AddCategoryComponent implements OnInit {
 
   plusIcon = faPlusSquare;
+
+  minusIcon = faMinusSquare;
 
   language: string;
 
@@ -52,34 +53,112 @@ export class AddCategoryComponent implements OnInit {
         order: [0, Validators.required],
         name: ['', Validators.required],
         translations: this.formBuilder.array([this.createTranslationItem(selectedLanguage)]),
-        matchesGuest: [false]
+        matchesGuest: [false],
+        matchesUsers: this.formBuilder.array([this.createMatchesItem()]),
+        matchesRoles: this.formBuilder.array([this.createMatchesItem()]),
+        matchesGroups: this.formBuilder.array([this.createMatchesItem()])
       });
     }
     return this.form;
-  }
-
-  addTranslation(): void {
-    (this.form.get('translations') as FormArray).controls.push(this.createTranslationItem());
-  }
-
-  createTranslationItem(languageCode?: string): FormGroup {
-    return this.formBuilder.group({
-      language: [languageCode === null || languageCode === undefined ? '' : languageCode],
-      value: ['']
-    });
   }
 
   get translations(): FormArray {
     return this.form.get('translations') as FormArray;
   }
 
+  matches(formArrayName: string): FormArray {
+    return this.form.get(formArrayName) as FormArray;
+  }
+
+  isAddTranslationButtonDisabled(index: number): boolean {
+    return (this.translations.controls[index].get('language').value as string).length === 0
+      || (this.translations.controls[index].get('value').value as string).length === 0;
+  }
+
+  isAddMatchesButtonDisabled(formArrayName: string, index: number): boolean {
+    return (this.matches(formArrayName).controls[index].get('value').value as string).length === 0;
+  }
+
+  addTranslation(): void {
+    this.translations.controls.push(this.createTranslationItem());
+  }
+
+  addMatches(formArrayName: string): void {
+    this.matches(formArrayName).controls.push(this.createMatchesItem());
+  }
+
+  removeTranslation(index: number): void {
+    this.translations.controls.splice(index, 1);
+  }
+
+  removeMatches(formArrayName: string, index: number): void {
+    this.matches(formArrayName).controls.splice(index, 1);
+  }
+
+  createTranslationItem(languageCode?: string): FormGroup {
+    return this.formBuilder.group({
+      languageSelector: [languageCode === null || languageCode === undefined ? '' : languageCode],
+      language: [languageCode === null || languageCode === undefined ? '' : languageCode],
+      value: ['']
+    });
+  }
+
+  createMatchesItem(): FormGroup {
+    return this.formBuilder.group({
+      value: ['']
+    });
+  }
+
+  onKeyTranslationValue(event: any, index: number): void {
+    if (event.key === 'Enter' && !this.isAddTranslationButtonDisabled(index)) {
+      this.addTranslation();
+    }
+  }
+
+  onKeyMatchesValue(event: any, formArrayName: string, index: number): void {
+    if (event.key === 'Enter' && !this.isAddMatchesButtonDisabled(formArrayName, index)) {
+      this.addMatches(formArrayName);
+    }
+  }
+
+  fromLanguageSelectorToLanguage(index: number): void {
+    const value = this.translations.controls[index].get('languageSelector').value;
+    console.error('Value = ' + value);
+    this.translations.controls[index].get('language').setValue(value);
+  }
+
+  fromLanguageToLanguageSelector(index: number): void {
+    const value = this.translations.controls[index].get('language').value;
+    console.error('Value = ' + value);
+    this.translations.controls[index].get('languageSelector').setValue(value);
+  }
+
   addCategory(): void {
     const category: CategorySpecification = {
       order: this.form.get('order').value,
-      name: this.form.get('name').value
+      name: this.form.get('name').value,
+      translations: this.translations.controls
+      .filter(value => value.get('language').value !== '' && value.get('value').value !== '')
+      .map(value => {
+        const translation: Translation = {
+          language: value.get('language').value,
+          value: value.get('value').value
+        };
+        return translation;
+      }),
+      matchesGuest: this.form.get('matchesGuest').value,
+      matchesUsers: this.matches('matchesUsers').controls
+      .filter(value => value.get('value').value !== '')
+      .map(value => value.get('value').value),
+      matchesRoles: this.matches('matchesRoles').controls
+      .filter(value => value.get('value').value !== '')
+      .map(value => value.get('value').value),
+      matchesGroups: this.matches('matchesGroups').controls
+      .filter(value => value.get('value').value !== '')
+      .map(value => value.get('value').value)
     };
     this.categoryService.addCategory(category)
-    .subscribe(response => {
+    .subscribe(() => {
       this.router.navigate(['/categories'])
       .then(() => this.snackbar.show('Category successfully added.'));
     });
