@@ -6,3 +6,27 @@
     <a routerLink="/links">Back</a>
   </div>
 </div>
+<ng-container *ngIf="languages | async as availableLanguages">
+  <form [formGroup]="buildForm(availableLanguages)" (ngSubmit)="addLink()">
+    <div class="form-group">
+      <label for="order">Sort order</label>
+      <input type="number" class="form-control"
+             [ngClass]="form.get('order').errors ? 'is-invalid' : ''"
+             id="order" name="order"
+             aria-describedby="orderHelp"
+             formControlName="order">
+      <small id="orderHelp" class="form-text text-muted">Please type in the sort order value.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="href">Link</label>
+      <input type="text" class="form-control"
+             [ngClass]="form.get('href').errors ? 'is-invalid' : ''"
+             id="href" name="href"
+             aria-describedby="hrefHelp" placeholder="http://example.org"
+             formControlName="href">
+      <small id="hrefHelp" class="form-text text-muted">Please type in the link location.</small>
+    </div>
+
+  </form>
+</ng-container>

@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SnackbarService} from '../../shared/snackbar/snackbar.service';
-import {CategoryService, CategorySpecification} from '../../shared/service/category.service';
 import {LanguageService} from '../../shared/service/language.service';
 import {LinkService, LinkSpecification} from '../../shared/service/link.service';
 import {faMinusSquare, faPlusSquare} from '@fortawesome/free-regular-svg-icons';

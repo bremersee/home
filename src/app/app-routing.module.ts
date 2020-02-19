@@ -6,6 +6,7 @@ import {AppAuthGuard} from './app.authguard';
 import {environment} from '../environments/environment';
 import {LinksComponent} from './links/links.component';
 import {AddCategoryComponent} from './categories/add-category/add-category.component';
+import {AddLinkComponent} from './links/add-link/add-link.component';
 
 const routes: Routes = [
   {
@@ -27,6 +28,14 @@ const routes: Routes = [
   {
     path: 'links',
     component: LinksComponent,
+    canActivate: [AppAuthGuard],
+    data: {
+      roles: environment.adminRoles
+    }
+  },
+  {
+    path: 'links/add',
+    component: AddLinkComponent,
     canActivate: [AppAuthGuard],
     data: {
       roles: environment.adminRoles
