@@ -23,9 +23,116 @@
       <input type="text" class="form-control"
              [ngClass]="form.get('href').errors ? 'is-invalid' : ''"
              id="href" name="href"
-             aria-describedby="hrefHelp" placeholder="http://example.org"
+             aria-describedby="hrefHelp" placeholder="http://bremersee.org"
              formControlName="href">
       <small id="hrefHelp" class="form-text text-muted">Please type in the link location.</small>
+    </div>
+
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="blank" name="blank"
+             formControlName="blank">
+      <label class="form-check-label" for="blank">
+        Open in new target
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="text">Link</label>
+      <input type="text" class="form-control"
+             [ngClass]="form.get('text').errors ? 'is-invalid' : ''"
+             id="text" name="text"
+             aria-describedby="textHelp" placeholder="Bremersee home page"
+             formControlName="text">
+      <small id="textHelp" class="form-text text-muted">Please type in the displayed text of the link.</small>
+    </div>
+
+    <div class="form-group">
+      <label>Text translations</label> <!-- formArrayName="translations" -->
+      <div formArrayName="textTranslations"
+           *ngFor="let control of translations('textTranslations').controls; let i=index">
+        <div [formGroupName]="i" class="form-row pb-2">
+          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+            <input class="form-control" formControlName="language" type="text"
+                   (keyup)="onKeyTranslationValue($event, 'textTranslations', i)"
+                   (change)="fromLanguageToLanguageSelector('textTranslations', i)">
+          </div>
+          <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3">
+            <select class="form-control" formControlName="languageSelector"
+                    (change)="fromLanguageSelectorToLanguage('textTranslations', i)">
+              <option *ngFor="let lang of availableLanguages" value="{{lang.locale}}">
+                {{lang.description}}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <input class="form-control" formControlName="value" type="text"
+                   (keyup)="onKeyTranslationValue($event, 'textTranslations', i)">
+          </div>
+          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+            <button type="button" class="btn btn-outline-primary w-100"
+                    *ngIf="i === translations('textTranslations').length - 1"
+                    [disabled]="isAddTranslationButtonDisabled('textTranslations', i)"
+                    (click)="addTranslation('textTranslations')">
+              <fa-icon [icon]="plusIcon"></fa-icon>
+            </button>
+            <button type="button" class="btn btn-outline-primary w-100"
+                    *ngIf="i < translations('textTranslations').length - 1"
+                    (click)="removeTranslation('textTranslations', i)">
+              <fa-icon [icon]="minusIcon"></fa-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Link</label>
+      <input type="text" class="form-control"
+             [ngClass]="form.get('description').errors ? 'is-invalid' : ''"
+             id="description" name="description"
+             aria-describedby="descriptionHelp"
+             placeholder="The home page of bremersee is fantastic."
+             formControlName="description">
+      <small id="descriptionHelp" class="form-text text-muted">Please type in the description of the link.</small>
+    </div>
+
+    <div class="form-group">
+      <label>Description translations</label>
+      <div formArrayName="descriptionTranslations"
+           *ngFor="let control of translations('descriptionTranslations').controls; let i=index">
+        <div [formGroupName]="i" class="form-row pb-2">
+          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+            <input class="form-control" formControlName="language" type="text"
+                   (keyup)="onKeyTranslationValue($event, 'descriptionTranslations', i)"
+                   (change)="fromLanguageToLanguageSelector('descriptionTranslations', i)">
+          </div>
+          <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3">
+            <select class="form-control" formControlName="languageSelector"
+                    (change)="fromLanguageSelectorToLanguage('descriptionTranslations', i)">
+              <option *ngFor="let lang of availableLanguages" value="{{lang.locale}}">
+                {{lang.description}}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <input class="form-control" formControlName="value" type="text"
+                   (keyup)="onKeyTranslationValue($event, 'descriptionTranslations', i)">
+          </div>
+          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+            <button type="button" class="btn btn-outline-primary w-100"
+                    *ngIf="i === translations('descriptionTranslations').length - 1"
+                    [disabled]="isAddTranslationButtonDisabled('descriptionTranslations', i)"
+                    (click)="addTranslation('descriptionTranslations')">
+              <fa-icon [icon]="plusIcon"></fa-icon>
+            </button>
+            <button type="button" class="btn btn-outline-primary w-100"
+                    *ngIf="i < translations('descriptionTranslations').length - 1"
+                    (click)="removeTranslation('descriptionTranslations', i)">
+              <fa-icon [icon]="minusIcon"></fa-icon>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
   </form>
