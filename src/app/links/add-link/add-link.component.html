@@ -169,57 +169,67 @@
       </div>
     </div>
 
-    <div class="form-group">
-      <label>Roles</label>
-      <div formArrayName="roles"
-           *ngFor="let control of aclEntries('roles').controls; let i=index">
-        <div [formGroupName]="i" class="form-row pb-2">
-          <div class="col">
-            <input class="form-control" formControlName="value" type="text"
-                   (keyup)="onKeyAclEntryValue($event, 'roles', i)">
-          </div>
-          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
-            <button type="button" class="btn btn-outline-primary w-100"
-                    *ngIf="i === aclEntries('roles').length - 1"
-                    [disabled]="isAddAclEntryButtonDisabled('roles', i)"
-                    (click)="addAclEntry('roles')">
-              <fa-icon [icon]="plusIcon"></fa-icon>
-            </button>
-            <button type="button" class="btn btn-outline-primary w-100"
-                    *ngIf="i < aclEntries('roles').length - 1"
-                    (click)="removeAclEntry('roles', i)">
-              <fa-icon [icon]="minusIcon"></fa-icon>
-            </button>
+    <ng-container *ngIf="roles | async as availableRoles">
+      <div class="form-group">
+        <label>Roles</label>
+        <div formArrayName="roles"
+             *ngFor="let control of aclEntries('roles').controls; let i=index">
+          <div [formGroupName]="i" class="form-row pb-2">
+            <div class="col">
+              <select class="form-control" formControlName="value">
+                <option *ngFor="let role of availableRoles" value="{{role.value}}">
+                  {{role.displayValue}}
+                </option>
+              </select>
+            </div>
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+              <button type="button" class="btn btn-outline-primary w-100"
+                      *ngIf="i === aclEntries('roles').length - 1"
+                      [disabled]="isAddAclEntryButtonDisabled('roles', i)"
+                      (click)="addAclEntry('roles')">
+                <fa-icon [icon]="plusIcon"></fa-icon>
+              </button>
+              <button type="button" class="btn btn-outline-primary w-100"
+                      *ngIf="i < aclEntries('roles').length - 1"
+                      (click)="removeAclEntry('roles', i)">
+                <fa-icon [icon]="minusIcon"></fa-icon>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </ng-container>
 
-    <div class="form-group">
-      <label>Groups</label>
-      <div formArrayName="groups"
-           *ngFor="let control of aclEntries('groups').controls; let i=index">
-        <div [formGroupName]="i" class="form-row pb-2">
-          <div class="col">
-            <input class="form-control" formControlName="value" type="text"
-                   (keyup)="onKeyAclEntryValue($event, 'groups', i)">
-          </div>
-          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
-            <button type="button" class="btn btn-outline-primary w-100"
-                    *ngIf="i === aclEntries('groups').length - 1"
-                    [disabled]="isAddAclEntryButtonDisabled('groups', i)"
-                    (click)="addAclEntry('groups')">
-              <fa-icon [icon]="plusIcon"></fa-icon>
-            </button>
-            <button type="button" class="btn btn-outline-primary w-100"
-                    *ngIf="i < aclEntries('groups').length - 1"
-                    (click)="removeAclEntry('groups', i)">
-              <fa-icon [icon]="minusIcon"></fa-icon>
-            </button>
+    <ng-container *ngIf="groups | async as availableGroups">
+      <div class="form-group">
+        <label>Groups</label>
+        <div formArrayName="groups"
+             *ngFor="let control of aclEntries('groups').controls; let i=index">
+          <div [formGroupName]="i" class="form-row pb-2">
+            <div class="col">
+              <select class="form-control" formControlName="value">
+                <option *ngFor="let group of availableGroups" value="{{group.value}}">
+                  {{group.displayValue}}
+                </option>
+              </select>
+            </div>
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+              <button type="button" class="btn btn-outline-primary w-100"
+                      *ngIf="i === aclEntries('groups').length - 1"
+                      [disabled]="isAddAclEntryButtonDisabled('groups', i)"
+                      (click)="addAclEntry('groups')">
+                <fa-icon [icon]="plusIcon"></fa-icon>
+              </button>
+              <button type="button" class="btn btn-outline-primary w-100"
+                      *ngIf="i < aclEntries('groups').length - 1"
+                      (click)="removeAclEntry('groups', i)">
+                <fa-icon [icon]="minusIcon"></fa-icon>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </ng-container>
 
     <div class="row pt-4 pb-5 ml-2">
       <div class="flex-column pr-2">

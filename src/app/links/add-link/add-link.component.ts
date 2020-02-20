@@ -9,6 +9,9 @@ import {Observable} from 'rxjs';
 import {LocaleDescription} from '../../shared/model/locale-description';
 import {Translation} from '../../shared/model/translation';
 import {AccessControlEntry, AccessControlList} from '../../shared/model/access-control-list';
+import {SelectOption} from '../../shared/model/select-option';
+import {RoleService} from '../../shared/service/role.service';
+import {GroupService} from '../../shared/service/group.service';
 
 @Component({
   selector: 'app-add-link',
@@ -25,19 +28,27 @@ export class AddLinkComponent implements OnInit {
 
   languages: Observable<Array<LocaleDescription>>;
 
+  roles: Observable<Array<SelectOption>>;
+
+  groups: Observable<Array<SelectOption>>;
+
   form: FormGroup;
 
   constructor(private router: Router,
               private formBuilder: FormBuilder,
               private snackbar: SnackbarService,
               private linkService: LinkService,
-              private languageService: LanguageService) {
+              private languageService: LanguageService,
+              private roleService: RoleService,
+              private groupService: GroupService) {
   }
 
   ngOnInit() {
     // @ts-ignore
     this.language = navigator.language || navigator.userLanguage;
     this.languages = this.languageService.getAvailableLanguages(this.language);
+    this.roles = this.roleService.getAvailableRoles();
+    this.groups = this.groupService.getAvailableGroups();
   }
 
   buildForm(availableLanguages: Array<LocaleDescription>): FormGroup {
