@@ -7,6 +7,8 @@ import {environment} from '../environments/environment';
 import {LinksComponent} from './links/links.component';
 import {AddCategoryComponent} from './categories/add-category/add-category.component';
 import {AddLinkComponent} from './links/add-link/add-link.component';
+import {EditCategoryComponent} from './categories/edit-category/edit-category.component';
+import {EditLinkComponent} from './links/edit-link/edit-link.component';
 
 const routes: Routes = [
   {
@@ -26,6 +28,14 @@ const routes: Routes = [
     }
   },
   {
+    path: 'categories/:id/edit',
+    component: EditCategoryComponent,
+    canActivate: [AppAuthGuard],
+    data: {
+      roles: environment.adminRoles
+    }
+  },
+  {
     path: 'links',
     component: LinksComponent,
     canActivate: [AppAuthGuard],
@@ -36,6 +46,14 @@ const routes: Routes = [
   {
     path: 'links/add',
     component: AddLinkComponent,
+    canActivate: [AppAuthGuard],
+    data: {
+      roles: environment.adminRoles
+    }
+  },
+  {
+    path: 'links/:id/edit',
+    component: EditLinkComponent,
     canActivate: [AppAuthGuard],
     data: {
       roles: environment.adminRoles
