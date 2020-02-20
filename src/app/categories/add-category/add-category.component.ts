@@ -8,6 +8,9 @@ import {LanguageService} from '../../shared/service/language.service';
 import {LocaleDescription} from '../../shared/model/locale-description';
 import {Observable} from 'rxjs';
 import {faMinusSquare, faPlusSquare} from '@fortawesome/free-regular-svg-icons';
+import {RoleService} from '../../shared/service/role.service';
+import {GroupService} from '../../shared/service/group.service';
+import {SelectOption} from '../../shared/model/select-option';
 
 @Component({
   selector: 'app-add-category',
@@ -24,19 +27,27 @@ export class AddCategoryComponent implements OnInit {
 
   languages: Observable<Array<LocaleDescription>>;
 
+  roles: Observable<Array<SelectOption>>;
+
+  groups: Observable<Array<SelectOption>>;
+
   form: FormGroup;
 
   constructor(private router: Router,
               private formBuilder: FormBuilder,
               private snackbar: SnackbarService,
               private categoryService: CategoryService,
-              private languageService: LanguageService) {
+              private languageService: LanguageService,
+              private roleService: RoleService,
+              private groupService: GroupService) {
   }
 
   ngOnInit() {
     // @ts-ignore
     this.language = navigator.language || navigator.userLanguage;
     this.languages = this.languageService.getAvailableLanguages(this.language);
+    this.roles = this.roleService.getAvailableRoles();
+    this.groups = this.groupService.getAvailableGroups();
   }
 
   buildForm(availableLanguages: Array<LocaleDescription>): FormGroup {
