@@ -102,7 +102,7 @@ export class AddLinkComponent implements OnInit {
     this.translations(formArrayName).controls.push(this.createTranslationItem());
   }
 
-  addMatches(formArrayName: string): void {
+  addAclEntry(formArrayName: string): void {
     this.aclEntries(formArrayName).controls.push(this.createAclEntry());
   }
 
@@ -122,7 +122,7 @@ export class AddLinkComponent implements OnInit {
 
   onKeyAclEntryValue(event: any, formArrayName: string, index: number): void {
     if (event.key === 'Enter' && !this.isAddAclEntryButtonDisabled(formArrayName, index)) {
-      this.addMatches(formArrayName);
+      this.addAclEntry(formArrayName);
     }
   }
 

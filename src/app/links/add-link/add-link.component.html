@@ -37,7 +37,7 @@
     </div>
 
     <div class="form-group">
-      <label for="text">Link</label>
+      <label for="text">Text</label>
       <input type="text" class="form-control"
              [ngClass]="form.get('text').errors ? 'is-invalid' : ''"
              id="text" name="text"
@@ -128,6 +128,40 @@
             <button type="button" class="btn btn-outline-primary w-100"
                     *ngIf="i < translations('descriptionTranslations').length - 1"
                     (click)="removeTranslation('descriptionTranslations', i)">
+              <fa-icon [icon]="minusIcon"></fa-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="guest" name="guest"
+             formControlName="guest">
+      <label class="form-check-label" for="guest">
+        Is public
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>MUsers</label>
+      <div formArrayName="users"
+           *ngFor="let control of aclEntries('users').controls; let i=index">
+        <div [formGroupName]="i" class="form-row pb-2">
+          <div class="col">
+            <input class="form-control" formControlName="value" type="text"
+                   (keyup)="onKeyAclEntryValue($event, 'users', i)">
+          </div>
+          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+            <button type="button" class="btn btn-outline-primary w-100"
+                    *ngIf="i === aclEntries('users').length - 1"
+                    [disabled]="isAddAclEntryButtonDisabled('users', i)"
+                    (click)="addAclEntry('users')">
+              <fa-icon [icon]="plusIcon"></fa-icon>
+            </button>
+            <button type="button" class="btn btn-outline-primary w-100"
+                    *ngIf="i < aclEntries('users').length - 1"
+                    (click)="removeAclEntry('users', i)">
               <fa-icon [icon]="minusIcon"></fa-icon>
             </button>
           </div>
