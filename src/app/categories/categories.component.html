@@ -18,7 +18,14 @@
   <tr *ngFor="let category of categories | async; let i = index">
     <td>{{category.name}}</td>
     <td>{{category.order}}</td>
-    <td></td>
+    <td class="text-right">
+      <a routerLink="/categories/{{category.id}}/edit">
+        <fa-icon [icon]="editIcon"></fa-icon>
+      </a>
+      <a routerLink="/categories/{{category.id}}/delete" class="pl-4">
+        <fa-icon [icon]="deleteIcon"></fa-icon>
+      </a>
+    </td>
   </tr>
   </tbody>
 </table>

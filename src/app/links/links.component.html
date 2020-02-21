@@ -20,7 +20,14 @@
     <td>{{link.text}}</td>
     <td>{{link.href}}</td>
     <td>{{link.order}}</td>
-    <td></td>
+    <td class="text-right">
+      <a routerLink="/links/{{link.id}}/edit">
+        <fa-icon [icon]="editIcon"></fa-icon>
+      </a>
+      <a routerLink="/links/{{link.id}}/delete" class="pl-4">
+        <fa-icon [icon]="deleteIcon"></fa-icon>
+      </a>
+    </td>
   </tr>
   </tbody>
 </table>

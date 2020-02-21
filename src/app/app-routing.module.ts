@@ -9,6 +9,8 @@ import {AddCategoryComponent} from './categories/add-category/add-category.compo
 import {AddLinkComponent} from './links/add-link/add-link.component';
 import {EditCategoryComponent} from './categories/edit-category/edit-category.component';
 import {EditLinkComponent} from './links/edit-link/edit-link.component';
+import {DeleteLinkComponent} from './links/delete-link/delete-link.component';
+import {DeleteCategoryComponent} from './categories/delete-category/delete-category.component';
 
 const routes: Routes = [
   {
@@ -36,6 +38,14 @@ const routes: Routes = [
     }
   },
   {
+    path: 'categories/:id/delete',
+    component: DeleteCategoryComponent,
+    canActivate: [AppAuthGuard],
+    data: {
+      roles: environment.adminRoles
+    }
+  },
+  {
     path: 'links',
     component: LinksComponent,
     canActivate: [AppAuthGuard],
@@ -54,6 +64,14 @@ const routes: Routes = [
   {
     path: 'links/:id/edit',
     component: EditLinkComponent,
+    canActivate: [AppAuthGuard],
+    data: {
+      roles: environment.adminRoles
+    }
+  },
+  {
+    path: 'links/:id/delete',
+    component: DeleteLinkComponent,
     canActivate: [AppAuthGuard],
     data: {
       roles: environment.adminRoles

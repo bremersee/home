@@ -25,6 +25,8 @@ import {fas} from '@fortawesome/free-solid-svg-icons';
 import {far} from '@fortawesome/free-regular-svg-icons';
 import { EditCategoryComponent } from './categories/edit-category/edit-category.component';
 import { EditLinkComponent } from './links/edit-link/edit-link.component';
+import { DeleteCategoryComponent } from './categories/delete-category/delete-category.component';
+import { DeleteLinkComponent } from './links/delete-link/delete-link.component';
 
 const keycloakService = new KeycloakService();
 
@@ -40,7 +42,9 @@ const keycloakService = new KeycloakService();
     AddCategoryComponent,
     AddLinkComponent,
     EditCategoryComponent,
-    EditLinkComponent
+    EditLinkComponent,
+    DeleteCategoryComponent,
+    DeleteLinkComponent
   ],
   imports: [
     BrowserModule,

@@ -1,1 +1,179 @@
-<p>edit-category works!</p>
+<div class="row">
+  <h2 class="col">
+    Edit category
+  </h2>
+  <div class="col text-right align-content-center">
+    <a routerLink="/categories">Back</a>
+  </div>
+</div>
+
+<ng-container *ngIf="languages | async as availableLanguages">
+  <ng-container *ngIf="category | async as cat">
+    <form [formGroup]="buildForm(cat, availableLanguages)" (ngSubmit)="updateCategory()">
+      <div class="form-group">
+        <label for="order">Sort order</label>
+        <input type="number" class="form-control"
+               [ngClass]="form.get('order').errors ? 'is-invalid' : ''"
+               id="order" name="order"
+               aria-describedby="orderHelp"
+               formControlName="order">
+        <small id="orderHelp" class="form-text text-muted">Please type in the sort order
+          value.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control"
+               [ngClass]="form.get('name').errors ? 'is-invalid' : ''"
+               id="name" name="name"
+               aria-describedby="nameHelp" placeholder="Category name"
+               formControlName="name">
+        <small id="nameHelp" class="form-text text-muted">Please type in the category name.</small>
+      </div>
+
+      <div class="form-group">
+        <label>Translations</label>
+        <div formArrayName="translations"
+             *ngFor="let control of translations.controls; let i=index">
+          <div [formGroupName]="i" class="form-row pb-2">
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+              <input class="form-control" formControlName="language" type="text"
+                     (keyup)="onKeyTranslationValue($event, i)"
+                     (change)="fromLanguageToLanguageSelector(i)">
+            </div>
+            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3">
+              <select class="form-control" formControlName="languageSelector"
+                      (change)="fromLanguageSelectorToLanguage(i)">
+                <option *ngFor="let lang of availableLanguages" value="{{lang.locale}}">
+                  {{lang.description}}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <input class="form-control" formControlName="value" type="text"
+                     (keyup)="onKeyTranslationValue($event, i)">
+            </div>
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+              <button type="button" class="btn btn-outline-primary w-100"
+                      *ngIf="i === translations.length - 1"
+                      [disabled]="isAddTranslationButtonDisabled(i)" (click)="addTranslation()">
+                <fa-icon [icon]="plusIcon"></fa-icon>
+              </button>
+              <button type="button" class="btn btn-outline-primary w-100"
+                      *ngIf="i < translations.length - 1" (click)="removeTranslation(i)">
+                <fa-icon [icon]="minusIcon"></fa-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="form.get('matchesGuest').value || !(publicCategoryExists | async)"
+           class="form-check">
+        <input class="form-check-input" type="checkbox" id="matchesGuest" name="matchesGuest"
+               formControlName="matchesGuest">
+        <label class="form-check-label" for="matchesGuest">
+          Matches guest
+        </label>
+      </div>
+
+      <div class="form-group pt-3">
+        <label>Matches users</label>
+        <div formArrayName="matchesUsers"
+             *ngFor="let control of matches('matchesUsers').controls; let i=index">
+          <div [formGroupName]="i" class="form-row pb-2">
+            <div class="col">
+              <input class="form-control" formControlName="value" type="text"
+                     (keyup)="onKeyMatchesValue($event, 'matchesUsers', i)">
+            </div>
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+              <button type="button" class="btn btn-outline-primary w-100"
+                      *ngIf="i === matches('matchesUsers').length - 1"
+                      [disabled]="isAddMatchesButtonDisabled('matchesUsers', i)"
+                      (click)="addMatches('matchesUsers')">
+                <fa-icon [icon]="plusIcon"></fa-icon>
+              </button>
+              <button type="button" class="btn btn-outline-primary w-100"
+                      *ngIf="i < matches('matchesUsers').length - 1"
+                      (click)="removeMatches('matchesUsers', i)">
+                <fa-icon [icon]="minusIcon"></fa-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="roles | async as availableRoles">
+        <div class="form-group">
+          <label>Matches roles</label>
+          <div formArrayName="matchesRoles"
+               *ngFor="let control of matches('matchesRoles').controls; let i=index">
+            <div [formGroupName]="i" class="form-row pb-2">
+              <div class="col">
+                <select class="form-control" formControlName="value">
+                  <option *ngFor="let role of availableRoles" value="{{role.value}}">
+                    {{role.displayValue}}
+                  </option>
+                </select>
+              </div>
+              <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+                <button type="button" class="btn btn-outline-primary w-100"
+                        *ngIf="i === matches('matchesRoles').length - 1"
+                        [disabled]="isAddMatchesButtonDisabled('matchesRoles', i)"
+                        (click)="addMatches('matchesRoles')">
+                  <fa-icon [icon]="plusIcon"></fa-icon>
+                </button>
+                <button type="button" class="btn btn-outline-primary w-100"
+                        *ngIf="i < matches('matchesRoles').length - 1"
+                        (click)="removeMatches('matchesRoles', i)">
+                  <fa-icon [icon]="minusIcon"></fa-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="groups | async as availableGroups">
+        <div class="form-group">
+          <label>Matches groups</label>
+          <div formArrayName="matchesGroups"
+               *ngFor="let control of matches('matchesGroups').controls; let i=index">
+            <div [formGroupName]="i" class="form-row pb-2">
+              <div class="col">
+                <select class="form-control" formControlName="value">
+                  <option *ngFor="let group of availableGroups" value="{{group.value}}">
+                    {{group.displayValue}}
+                  </option>
+                </select>
+              </div>
+              <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+                <button type="button" class="btn btn-outline-primary w-100"
+                        *ngIf="i === matches('matchesGroups').length - 1"
+                        [disabled]="isAddMatchesButtonDisabled('matchesGroups', i)"
+                        (click)="addMatches('matchesGroups')">
+                  <fa-icon [icon]="plusIcon"></fa-icon>
+                </button>
+                <button type="button" class="btn btn-outline-primary w-100"
+                        *ngIf="i < matches('matchesGroups').length - 1"
+                        (click)="removeMatches('matchesGroups', i)">
+                  <fa-icon [icon]="minusIcon"></fa-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="row pt-4 pb-5 ml-2">
+        <div class="flex-column pr-2">
+          <button type="submit" class="btn btn-primary"
+                  [disabled]="!form.valid">
+            Update category
+          </button>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+</ng-container>
+
