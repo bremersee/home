@@ -1,1 +1,24 @@
-<p>delete-category works!</p>
+<div class="row">
+  <h2 class="col">
+    Delete category
+  </h2>
+</div>
+
+<ng-container *ngIf="category | async as categorySpecification">
+  <div>
+    <p class="alert-danger">
+      This action cannot be undone. This will permanently delete the category
+      <span class="font-weight-bold">{{categorySpecification.name}}</span>.
+    </p>
+    <div class="row">
+      <div class="col">
+        <button class="btn btn-danger" (click)="deleteCategory()">
+          Delete
+        </button>
+        <button class="btn btn-secondary ml-2" (click)="cancel()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>
