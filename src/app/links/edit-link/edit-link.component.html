@@ -1,1 +1,251 @@
-<p>edit-link works!</p>
+<div class="row">
+  <h2 class="col">
+    Add link
+  </h2>
+  <div class="col text-right align-content-center">
+    <a routerLink="/links">Back</a>
+  </div>
+</div>
+<ng-container *ngIf="languages | async as availableLanguages">
+  <ng-container *ngIf="link | async as linkSpecification">
+    <form [formGroup]="buildForm(linkSpecification, availableLanguages)"
+          (ngSubmit)="updateLink()">
+      <div class="form-group">
+        <label for="order">Sort order</label>
+        <input type="number" class="form-control"
+               [ngClass]="form.get('order').errors ? 'is-invalid' : ''"
+               id="order" name="order"
+               aria-describedby="orderHelp"
+               formControlName="order">
+        <small id="orderHelp" class="form-text text-muted">Please type in the sort order
+          value.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="href">Link</label>
+        <input type="text" class="form-control"
+               [ngClass]="form.get('href').errors ? 'is-invalid' : ''"
+               id="href" name="href"
+               aria-describedby="hrefHelp" placeholder="http://bremersee.org"
+               formControlName="href">
+        <small id="hrefHelp" class="form-text text-muted">Please type in the link location.</small>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="blank" name="blank"
+               formControlName="blank">
+        <label class="form-check-label" for="blank">
+          Open in new target
+        </label>
+      </div>
+
+      <div class="form-group pt-3">
+        <label for="text">Text</label>
+        <input type="text" class="form-control"
+               [ngClass]="form.get('text').errors ? 'is-invalid' : ''"
+               id="text" name="text"
+               aria-describedby="textHelp" placeholder="Bremersee home page"
+               formControlName="text">
+        <small id="textHelp" class="form-text text-muted">Please type in the displayed text of the
+          link.</small>
+      </div>
+
+      <div class="form-group">
+        <label>Text translations</label> <!-- formArrayName="translations" -->
+        <div formArrayName="textTranslations"
+             *ngFor="let control of translations('textTranslations').controls; let i=index">
+          <div [formGroupName]="i" class="form-row pb-2">
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+              <input class="form-control" formControlName="language" type="text"
+                     (keyup)="onKeyTranslationValue($event, 'textTranslations', i)"
+                     (change)="fromLanguageToLanguageSelector('textTranslations', i)">
+            </div>
+            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3">
+              <select class="form-control" formControlName="languageSelector"
+                      (change)="fromLanguageSelectorToLanguage('textTranslations', i)">
+                <option *ngFor="let lang of availableLanguages" value="{{lang.locale}}">
+                  {{lang.description}}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <input class="form-control" formControlName="value" type="text"
+                     (keyup)="onKeyTranslationValue($event, 'textTranslations', i)">
+            </div>
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+              <button type="button" class="btn btn-outline-primary w-100"
+                      *ngIf="i === translations('textTranslations').length - 1"
+                      [disabled]="isAddTranslationButtonDisabled('textTranslations', i)"
+                      (click)="addTranslation('textTranslations')">
+                <fa-icon [icon]="plusIcon"></fa-icon>
+              </button>
+              <button type="button" class="btn btn-outline-primary w-100"
+                      *ngIf="i < translations('textTranslations').length - 1"
+                      (click)="removeTranslation('textTranslations', i)">
+                <fa-icon [icon]="minusIcon"></fa-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control"
+               [ngClass]="form.get('description').errors ? 'is-invalid' : ''"
+               id="description" name="description"
+               aria-describedby="descriptionHelp"
+               placeholder="The home page of bremersee is fantastic."
+               formControlName="description">
+        <small id="descriptionHelp" class="form-text text-muted">Please type in the description of
+          the link.</small>
+      </div>
+
+      <div class="form-group">
+        <label>Description translations</label>
+        <div formArrayName="descriptionTranslations"
+             *ngFor="let control of translations('descriptionTranslations').controls; let i=index">
+          <div [formGroupName]="i" class="form-row pb-2">
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+              <input class="form-control" formControlName="language" type="text"
+                     (keyup)="onKeyTranslationValue($event, 'descriptionTranslations', i)"
+                     (change)="fromLanguageToLanguageSelector('descriptionTranslations', i)">
+            </div>
+            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3">
+              <select class="form-control" formControlName="languageSelector"
+                      (change)="fromLanguageSelectorToLanguage('descriptionTranslations', i)">
+                <option *ngFor="let lang of availableLanguages" value="{{lang.locale}}">
+                  {{lang.description}}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <input class="form-control" formControlName="value" type="text"
+                     (keyup)="onKeyTranslationValue($event, 'descriptionTranslations', i)">
+            </div>
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+              <button type="button" class="btn btn-outline-primary w-100"
+                      *ngIf="i === translations('descriptionTranslations').length - 1"
+                      [disabled]="isAddTranslationButtonDisabled('descriptionTranslations', i)"
+                      (click)="addTranslation('descriptionTranslations')">
+                <fa-icon [icon]="plusIcon"></fa-icon>
+              </button>
+              <button type="button" class="btn btn-outline-primary w-100"
+                      *ngIf="i < translations('descriptionTranslations').length - 1"
+                      (click)="removeTranslation('descriptionTranslations', i)">
+                <fa-icon [icon]="minusIcon"></fa-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="guest" name="guest"
+               formControlName="guest">
+        <label class="form-check-label" for="guest">
+          Is public
+        </label>
+      </div>
+
+      <ng-container *ngIf="!form.get('guest').value">
+        <div class="form-group pt-3">
+          <label>Users</label>
+          <div formArrayName="users"
+               *ngFor="let control of aclEntries('users').controls; let i=index">
+            <div [formGroupName]="i" class="form-row pb-2">
+              <div class="col">
+                <input class="form-control" formControlName="value" type="text"
+                       (keyup)="onKeyAclEntryValue($event, 'users', i)">
+              </div>
+              <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+                <button type="button" class="btn btn-outline-primary w-100"
+                        *ngIf="i === aclEntries('users').length - 1"
+                        [disabled]="isAddAclEntryButtonDisabled('users', i)"
+                        (click)="addAclEntry('users')">
+                  <fa-icon [icon]="plusIcon"></fa-icon>
+                </button>
+                <button type="button" class="btn btn-outline-primary w-100"
+                        *ngIf="i < aclEntries('users').length - 1"
+                        (click)="removeAclEntry('users', i)">
+                  <fa-icon [icon]="minusIcon"></fa-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-container *ngIf="roles | async as availableRoles">
+          <div class="form-group">
+            <label>Roles</label>
+            <div formArrayName="roles"
+                 *ngFor="let control of aclEntries('roles').controls; let i=index">
+              <div [formGroupName]="i" class="form-row pb-2">
+                <div class="col">
+                  <select class="form-control" formControlName="value">
+                    <option *ngFor="let role of availableRoles" value="{{role.value}}">
+                      {{role.displayValue}}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+                  <button type="button" class="btn btn-outline-primary w-100"
+                          *ngIf="i === aclEntries('roles').length - 1"
+                          [disabled]="isAddAclEntryButtonDisabled('roles', i)"
+                          (click)="addAclEntry('roles')">
+                    <fa-icon [icon]="plusIcon"></fa-icon>
+                  </button>
+                  <button type="button" class="btn btn-outline-primary w-100"
+                          *ngIf="i < aclEntries('roles').length - 1"
+                          (click)="removeAclEntry('roles', i)">
+                    <fa-icon [icon]="minusIcon"></fa-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="groups | async as availableGroups">
+          <div class="form-group">
+            <label>Groups</label>
+            <div formArrayName="groups"
+                 *ngFor="let control of aclEntries('groups').controls; let i=index">
+              <div [formGroupName]="i" class="form-row pb-2">
+                <div class="col">
+                  <select class="form-control" formControlName="value">
+                    <option *ngFor="let group of availableGroups" value="{{group.value}}">
+                      {{group.displayValue}}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+                  <button type="button" class="btn btn-outline-primary w-100"
+                          *ngIf="i === aclEntries('groups').length - 1"
+                          [disabled]="isAddAclEntryButtonDisabled('groups', i)"
+                          (click)="addAclEntry('groups')">
+                    <fa-icon [icon]="plusIcon"></fa-icon>
+                  </button>
+                  <button type="button" class="btn btn-outline-primary w-100"
+                          *ngIf="i < aclEntries('groups').length - 1"
+                          (click)="removeAclEntry('groups', i)">
+                    <fa-icon [icon]="minusIcon"></fa-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <div class="row pt-4 pb-5 ml-2">
+        <div class="flex-column pr-2">
+          <button type="submit" class="btn btn-primary"
+                  [disabled]="!form.valid">
+            Update link
+          </button>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+</ng-container>

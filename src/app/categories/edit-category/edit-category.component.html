@@ -8,8 +8,9 @@
 </div>
 
 <ng-container *ngIf="languages | async as availableLanguages">
-  <ng-container *ngIf="category | async as cat">
-    <form [formGroup]="buildForm(cat, availableLanguages)" (ngSubmit)="updateCategory()">
+  <ng-container *ngIf="category | async as categorySpecification">
+    <form [formGroup]="buildForm(categorySpecification, availableLanguages)"
+          (ngSubmit)="updateCategory()">
       <div class="form-group">
         <label for="order">Sort order</label>
         <input type="number" class="form-control"

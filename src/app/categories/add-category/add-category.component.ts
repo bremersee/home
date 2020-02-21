@@ -55,10 +55,7 @@ export class AddCategoryComponent implements OnInit {
 
   buildForm(availableLanguages: Array<LocaleDescription>): FormGroup {
     if (this.form === null || this.form === undefined) {
-      const languageCodes = new Array<string>();
-      for (const language of availableLanguages) {
-        languageCodes.push(language.locale);
-      }
+      const languageCodes = availableLanguages.map(language => language.locale);
       const selectedLanguage = this.language === null || this.language === undefined || this.language.length < 2
       || languageCodes.indexOf(this.language.substr(0, 2)) < 0
         ? 'en'
