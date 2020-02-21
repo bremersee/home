@@ -67,7 +67,7 @@
       </div>
     </div>
 
-    <div class="form-check">
+    <div *ngIf="!(publicCategoryExists | async)" class="form-check">
       <input class="form-check-input" type="checkbox" id="matchesGuest" name="matchesGuest"
              formControlName="matchesGuest">
       <label class="form-check-label" for="matchesGuest">

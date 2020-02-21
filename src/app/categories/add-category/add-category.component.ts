@@ -25,6 +25,8 @@ export class AddCategoryComponent implements OnInit {
 
   language: string;
 
+  publicCategoryExists: Observable<boolean>;
+
   languages: Observable<Array<LocaleDescription>>;
 
   roles: Observable<Array<SelectOption>>;
@@ -43,6 +45,7 @@ export class AddCategoryComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.publicCategoryExists = this.categoryService.publicCategoryExists();
     // @ts-ignore
     this.language = navigator.language || navigator.userLanguage;
     this.languages = this.languageService.getAvailableLanguages(this.language);

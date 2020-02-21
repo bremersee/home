@@ -73,4 +73,11 @@ export class CategoryService {
     });
   }
 
+  publicCategoryExists(): Observable<boolean> {
+    const httpHeaders = new HttpHeaders()
+    .set('Accept', 'application/json');
+    return this.http.get<boolean>(`${this.baseUrl}/api/admin/categories/f/public-exists`, {
+      headers: httpHeaders
+    });
+  }
 }
