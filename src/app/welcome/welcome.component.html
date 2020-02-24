@@ -1,16 +1,17 @@
-<h2>Hi folks</h2>
-
-<p>Language: {{lang}}</p>
-
-<h4>Roles</h4>
-<ul *ngIf="isLoggedIn">
-  <li *ngFor="let role of userRoles">{{role}}</li>
-</ul>
-
-<h4>Links</h4>
 <div *ngFor="let container of linkContainers | async">
-  <p>{{container.category}}</p>
-  <ul>
-    <li *ngFor="let link of container.links">{{link.text}}</li>
-  </ul>
+  <div *ngIf="!container.pub" class="mt-5">
+    <h2>{{container.category}}</h2>
+  </div>
+  <div class="row">
+    <div class="col-4" *ngFor="let link of container.links">
+      <div class="card">
+        <div class="card-body">
+          <a href="{{link.href}}" [target]="link.blank ? '_blank' : undefined">
+            <h5 class="card-title">{{link.text}}</h5>
+          </a>
+          <p class="card-text">{{link.description}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

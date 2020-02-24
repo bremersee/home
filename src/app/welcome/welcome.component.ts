@@ -12,22 +12,18 @@ export class WelcomeComponent implements OnInit {
 
   isLoggedIn = false;
 
-  linkContainers: Observable<Array<LinkContainer>>;
+  language: string;
 
-  lang: string;
+  linkContainers: Observable<Array<LinkContainer>>;
 
   constructor(private keycloakService: KeycloakService, private linkService: LinkService) {
   }
 
   ngOnInit() {
     // @ts-ignore
-    this.lang = navigator.language || navigator.userLanguage;
+    this.language = navigator.language || navigator.userLanguage;
     this.keycloakService.isLoggedIn().then(r => this.isLoggedIn = r);
-    this.linkContainers = this.linkService.getLinkContainers();
-  }
-
-  get userRoles(): string[] {
-    return this.keycloakService.getUserRoles(true);
+    this.linkContainers = this.linkService.getLinkContainers(this.language);
   }
 
 }
