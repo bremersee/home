@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/ng-openapi-gen/ng-openapi-gen-schema.json",
+  "input": "api.yaml",
+  "output": "src/app/shared/service",
+  "ignoreUnusedModels": false,
+  "enumStyle": "alias",
+  "removeStaleFiles": true,
+  "excludeTags": [""]
+}
