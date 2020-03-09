@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {environment} from '../../../environments/environment';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
+import {CustomHttpUrlEncodingCodec} from '../encoder';
 import {LinkContainer} from '../model/link-container';
 import {LinkSpecification} from '../model/link-specification';
 
@@ -18,43 +19,42 @@ export class LinkService {
   constructor(private http: HttpClient) {
   }
 
-  getLinkContainers(language?: string): Observable<Array<LinkContainer>> {
-    const httpHeaders = new HttpHeaders()
-    .set('Accept', 'application/json')
-    .set('Accept-Language', language === null || language === undefined || language.length < 2 ? 'en' : language);
-    return this.http.get<Array<LinkContainer>>(`${this.baseUrl}/api/public/links`, {
-      headers: httpHeaders
-    });
-  }
-
-  getLinks(): Observable<Array<LinkSpecification>> {
+  getLinks(categoryId?: string, report?: boolean): Observable<Array<LinkSpecification>> {
+    let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+    if (categoryId !== undefined && categoryId !== null) {
+      queryParameters = queryParameters.set('categoryId', categoryId);
+    }
     const httpHeaders = new HttpHeaders()
     .set('Accept', 'application/json');
-    return this.http.get<Array<LinkSpecification>>(`${this.baseUrl}/api/admin/links`, {
-      headers: httpHeaders
+    return this.http.get<Array<LinkSpecification>>(`${this.baseUrl}/api/links`, {
+      headers: httpHeaders,
+      params: queryParameters,
+      reportProgress: report
     });
   }
 
-  addLink(body: LinkSpecification): Observable<LinkSpecification> {
+  addLink(body: LinkSpecification, report?: boolean): Observable<LinkSpecification> {
     if (body === null || body === undefined) {
       throw new Error('Required parameter body was null or undefined when calling addLink.');
     }
     const httpHeaders = new HttpHeaders()
     .set('Accept', 'application/json')
     .set('Content-Type', 'application/json');
-    return this.http.post<LinkSpecification>(`${this.baseUrl}/api/admin/links`, body, {
-      headers: httpHeaders
+    return this.http.post<LinkSpecification>(`${this.baseUrl}/api/links`, body, {
+      headers: httpHeaders,
+      reportProgress: report
     });
   }
 
-  getLink(id: string): Observable<LinkSpecification> {
+  getLink(id: string, report?: boolean): Observable<LinkSpecification> {
     if (id === null || id === undefined) {
       throw new Error('Required parameter id was null or undefined when calling getLink.');
     }
     const httpHeaders = new HttpHeaders()
     .set('Accept', 'application/json');
-    return this.http.get<LinkSpecification>(`${this.baseUrl}/api/admin/links/${encodeURIComponent(String(id))}`, {
-      headers: httpHeaders
+    return this.http.get<LinkSpecification>(`${this.baseUrl}/api/links/${encodeURIComponent(String(id))}`, {
+      headers: httpHeaders,
+      reportProgress: report
     });
   }
 
@@ -68,7 +68,7 @@ export class LinkService {
     const httpHeaders = new HttpHeaders()
     .set('Accept', 'application/json')
     .set('Content-Type', 'application/json');
-    return this.http.put<LinkSpecification>(`${this.baseUrl}/api/admin/links/${encodeURIComponent(String(id))}`, body, {
+    return this.http.put<LinkSpecification>(`${this.baseUrl}/api/links/${encodeURIComponent(String(id))}`, body, {
       headers: httpHeaders
     });
   }
@@ -79,7 +79,7 @@ export class LinkService {
     }
     const httpHeaders = new HttpHeaders()
     .set('Accept', 'application/json');
-    return this.http.delete<void>(`${this.baseUrl}/api/admin/links/${encodeURIComponent(String(id))}`, {
+    return this.http.delete<void>(`${this.baseUrl}/api/links/${encodeURIComponent(String(id))}`, {
       headers: httpHeaders
     });
   }
