@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {KeycloakService} from 'keycloak-angular';
-import {LinkContainer, LinkService} from '../shared/service/link.service';
 import {Observable} from 'rxjs';
+import {MenuEntry, MenuService} from '../shared/service/menu.service';
 
 @Component({
   selector: 'app-welcome',
@@ -14,16 +14,16 @@ export class WelcomeComponent implements OnInit {
 
   language: string;
 
-  linkContainers: Observable<Array<LinkContainer>>;
+  menuEntries: Observable<Array<MenuEntry>>;
 
-  constructor(private keycloakService: KeycloakService, private linkService: LinkService) {
+  constructor(private keycloakService: KeycloakService, private menuService: MenuService) {
   }
 
   ngOnInit() {
     // @ts-ignore
     this.language = navigator.language || navigator.userLanguage;
     this.keycloakService.isLoggedIn().then(r => this.isLoggedIn = r);
-    this.linkContainers = this.linkService.getLinkContainers(this.language);
+    this.menuEntries = this.menuService.getMenuEntries(this.language);
   }
 
 }

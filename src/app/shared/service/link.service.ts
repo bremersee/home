@@ -3,10 +3,8 @@ import {environment} from '../../../environments/environment';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {CustomHttpUrlEncodingCodec} from '../encoder';
-import {LinkContainer} from '../model/link-container';
 import {LinkSpecification} from '../model/link-specification';
 
-export {LinkContainer} from '../model/link-container';
 export {LinkSpecification} from '../model/link-specification';
 
 @Injectable({

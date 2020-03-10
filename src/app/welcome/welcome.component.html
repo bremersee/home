@@ -1,9 +1,9 @@
-<div *ngFor="let container of linkContainers | async">
-  <div *ngIf="!container.pub" class="mt-5">
-    <h2>{{container.category}}</h2>
+<div *ngFor="let entries of menuEntries | async">
+  <div *ngIf="!entries.pub" class="mt-5">
+    <h2>{{entries.category}}</h2>
   </div>
   <div class="row">
-    <div class="col-4" *ngFor="let link of container.links">
+    <div class="col-4" *ngFor="let link of entries.links">
       <div class="card">
         <div class="card-body">
           <a href="{{link.href}}" [target]="link.blank ? '_blank' : undefined">
