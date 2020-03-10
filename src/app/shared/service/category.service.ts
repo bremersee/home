@@ -111,11 +111,11 @@ export class CategoryService {
   /**
    * Update a category.
    *
-   * @param body The new category specification.
    * @param id The category ID.
+   * @param body The new category specification.
    * @param report Flag to report request and response progress.
    */
-  public updateCategory(body: CategorySpecification, id: string, report?: boolean): Observable<CategorySpecification> {
+  public updateCategory(id: string, body: CategorySpecification, report?: boolean): Observable<CategorySpecification> {
     if (id === null || id === undefined) {
       throw new Error('Required parameter id was null or undefined when calling updateCategory.');
     }

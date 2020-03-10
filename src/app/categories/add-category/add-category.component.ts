@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CategorySpecification, Translation} from '../../shared/model/category-specification';
+import {AccessControlList, CategorySpecification, Translation} from '../../shared/model/category-specification';
 import {CategoryService} from '../../shared/service/category.service';
 import {Router} from '@angular/router';
 import {SnackbarService} from '../../shared/snackbar/snackbar.service';
@@ -11,6 +11,7 @@ import {faMinusSquare, faPlusSquare} from '@fortawesome/free-regular-svg-icons';
 import {RoleService} from '../../shared/service/role.service';
 import {GroupService} from '../../shared/service/group.service';
 import {SelectOption} from '../../shared/model/select-option';
+import {AccessControlEntry} from '../../shared/model/access-control-entry';
 
 @Component({
   selector: 'app-add-category',
@@ -64,10 +65,10 @@ export class AddCategoryComponent implements OnInit {
         order: [0, Validators.required],
         name: ['', Validators.required],
         translations: this.formBuilder.array([this.createTranslationItem(selectedLanguage)]),
-        matchesGuest: [false],
-        matchesUsers: this.formBuilder.array([this.createMatchesItem()]),
-        matchesRoles: this.formBuilder.array([this.createMatchesItem()]),
-        matchesGroups: this.formBuilder.array([this.createMatchesItem()])
+        guest: [false],
+        users: this.formBuilder.array([this.createAclEntry()]),
+        roles: this.formBuilder.array([this.createAclEntry()]),
+        groups: this.formBuilder.array([this.createAclEntry()])
       });
     }
     return this.form;
@@ -81,7 +82,7 @@ export class AddCategoryComponent implements OnInit {
     });
   }
 
-  createMatchesItem(): FormGroup {
+  createAclEntry(): FormGroup {
     return this.formBuilder.group({
       value: ['']
     });
@@ -91,7 +92,7 @@ export class AddCategoryComponent implements OnInit {
     return this.form.get('translations') as FormArray;
   }
 
-  matches(formArrayName: string): FormArray {
+  aclEntries(formArrayName: string): FormArray {
     return this.form.get(formArrayName) as FormArray;
   }
 
@@ -100,24 +101,24 @@ export class AddCategoryComponent implements OnInit {
       || (this.translations.controls[index].get('value').value as string).length === 0;
   }
 
-  isAddMatchesButtonDisabled(formArrayName: string, index: number): boolean {
-    return (this.matches(formArrayName).controls[index].get('value').value as string).length === 0;
+  isAddAclEntryButtonDisabled(formArrayName: string, index: number): boolean {
+    return (this.aclEntries(formArrayName).controls[index].get('value').value as string).length === 0;
   }
 
   addTranslation(): void {
     this.translations.controls.push(this.createTranslationItem());
   }
 
-  addMatches(formArrayName: string): void {
-    this.matches(formArrayName).controls.push(this.createMatchesItem());
+  addAclEntry(formArrayName: string): void {
+    this.aclEntries(formArrayName).controls.push(this.createAclEntry());
   }
 
   removeTranslation(index: number): void {
     this.translations.controls.splice(index, 1);
   }
 
-  removeMatches(formArrayName: string, index: number): void {
-    this.matches(formArrayName).controls.splice(index, 1);
+  removeAclEntry(formArrayName: string, index: number): void {
+    this.aclEntries(formArrayName).controls.splice(index, 1);
   }
 
   onKeyTranslationValue(event: any, index: number): void {
@@ -126,9 +127,9 @@ export class AddCategoryComponent implements OnInit {
     }
   }
 
-  onKeyMatchesValue(event: any, formArrayName: string, index: number): void {
-    if (event.key === 'Enter' && !this.isAddMatchesButtonDisabled(formArrayName, index)) {
-      this.addMatches(formArrayName);
+  onKeyAclEntryValue(event: any, formArrayName: string, index: number): void {
+    if (event.key === 'Enter' && !this.isAddAclEntryButtonDisabled(formArrayName, index)) {
+      this.addAclEntry(formArrayName);
     }
   }
 
@@ -143,28 +144,35 @@ export class AddCategoryComponent implements OnInit {
   }
 
   addCategory(): void {
+    const isPublic = this.form.get('guest').value as boolean;
+    const accessControlEntry: AccessControlEntry = {
+      permission: 'read',
+      guest: isPublic,
+      users: isPublic ? [] : this.aclEntries('users').controls
+      .filter(value => value.get('value').value !== '')
+      .map(value => value.get('value').value),
+      roles: isPublic ? [] : this.aclEntries('roles').controls
+      .filter(value => value.get('value').value !== '')
+      .map(value => value.get('value').value),
+      groups: isPublic ? [] : this.aclEntries('groups').controls
+      .filter(value => value.get('value').value !== '')
+      .map(value => value.get('value').value)
+    };
+    const accessControlList: AccessControlList = {
+      entries: [accessControlEntry]
+    };
     const category: CategorySpecification = {
+      acl: accessControlList,
       order: this.form.get('order').value,
       name: this.form.get('name').value,
       translations: this.translations.controls
       .filter(value => value.get('language').value !== '' && value.get('value').value !== '')
       .map(value => {
-        const translation: Translation = {
+        return {
           language: value.get('language').value,
           value: value.get('value').value
         };
-        return translation;
-      }),
-      matchesGuest: this.form.get('matchesGuest').value,
-      matchesUsers: this.matches('matchesUsers').controls
-      .filter(value => value.get('value').value !== '')
-      .map(value => value.get('value').value),
-      matchesRoles: this.matches('matchesRoles').controls
-      .filter(value => value.get('value').value !== '')
-      .map(value => value.get('value').value),
-      matchesGroups: this.matches('matchesGroups').controls
-      .filter(value => value.get('value').value !== '')
-      .map(value => value.get('value').value)
+      })
     };
     this.categoryService.addCategory(category)
     .subscribe(() => {

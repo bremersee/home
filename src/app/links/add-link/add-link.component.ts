@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {SnackbarService} from '../../shared/snackbar/snackbar.service';
 import {LanguageService} from '../../shared/service/language.service';
 import {LinkService, LinkSpecification} from '../../shared/service/link.service';
@@ -8,10 +8,8 @@ import {faMinusSquare, faPlusSquare} from '@fortawesome/free-regular-svg-icons';
 import {Observable} from 'rxjs';
 import {LocaleDescription} from '../../shared/model/locale-description';
 import {Translation} from '../../shared/model/translation';
-import {AccessControlEntry, AccessControlList} from '../../shared/model/access-control-list';
-import {SelectOption} from '../../shared/model/select-option';
-import {RoleService} from '../../shared/service/role.service';
-import {GroupService} from '../../shared/service/group.service';
+import {CategorySpecification} from '../../shared/model/category-specification';
+import {CategoryService} from '../../shared/service/category.service';
 
 @Component({
   selector: 'app-add-link',
@@ -28,9 +26,7 @@ export class AddLinkComponent implements OnInit {
 
   languages: Observable<Array<LocaleDescription>>;
 
-  roles: Observable<Array<SelectOption>>;
-
-  groups: Observable<Array<SelectOption>>;
+  categories: Observable<Array<CategorySpecification>>;
 
   form: FormGroup;
 
@@ -39,19 +35,17 @@ export class AddLinkComponent implements OnInit {
               private snackbar: SnackbarService,
               private linkService: LinkService,
               private languageService: LanguageService,
-              private roleService: RoleService,
-              private groupService: GroupService) {
+              private categoryService: CategoryService) {
   }
 
   ngOnInit() {
     // @ts-ignore
     this.language = navigator.language || navigator.userLanguage;
     this.languages = this.languageService.getAvailableLanguages(this.language);
-    this.roles = this.roleService.getAvailableRoles();
-    this.groups = this.groupService.getAvailableGroups();
+    this.categories = this.categoryService.getCategories();
   }
 
-  buildForm(availableLanguages: Array<LocaleDescription>): FormGroup {
+  buildForm(availableLanguages: Array<LocaleDescription>, availableCategories: Array<CategorySpecification>): FormGroup {
     if (this.form === null || this.form === undefined) {
       const languageCodes = availableLanguages.map(language => language.locale);
       const selectedLanguage = this.language === null || this.language === undefined || this.language.length < 2
@@ -66,10 +60,7 @@ export class AddLinkComponent implements OnInit {
         textTranslations: this.formBuilder.array([this.createTranslationItem(selectedLanguage)]),
         description: ['', Validators.required],
         descriptionTranslations: this.formBuilder.array([this.createTranslationItem(selectedLanguage)]),
-        guest: [false],
-        users: this.formBuilder.array([this.createAclEntry()]),
-        roles: this.formBuilder.array([this.createAclEntry()]),
-        groups: this.formBuilder.array([this.createAclEntry()])
+        categories: this.formBuilder.array(this.createSelectedCategories(availableCategories))
       });
     }
     return this.form;
@@ -83,17 +74,15 @@ export class AddLinkComponent implements OnInit {
     });
   }
 
-  createAclEntry(): FormGroup {
-    return this.formBuilder.group({
-      value: ['']
-    });
+  createSelectedCategories(availableCategories: Array<CategorySpecification>): Array<FormGroup> {
+    return availableCategories.map(category => this.formBuilder.group({
+      id: [category.id],
+      name: [category.name],
+      selected: [false]
+    }));
   }
 
   translations(formArrayName: string): FormArray {
-    return this.form.get(formArrayName) as FormArray;
-  }
-
-  aclEntries(formArrayName: string): FormArray {
     return this.form.get(formArrayName) as FormArray;
   }
 
@@ -102,35 +91,17 @@ export class AddLinkComponent implements OnInit {
       || (this.translations(formArrayName).controls[index].get('value').value as string).length === 0;
   }
 
-  isAddAclEntryButtonDisabled(formArrayName: string, index: number): boolean {
-    return (this.aclEntries(formArrayName).controls[index].get('value').value as string).length === 0;
-  }
-
   addTranslation(formArrayName: string): void {
     this.translations(formArrayName).controls.push(this.createTranslationItem());
-  }
-
-  addAclEntry(formArrayName: string): void {
-    this.aclEntries(formArrayName).controls.push(this.createAclEntry());
   }
 
   removeTranslation(formArrayName: string, index: number): void {
     this.translations(formArrayName).controls.splice(index, 1);
   }
 
-  removeAclEntry(formArrayName: string, index: number): void {
-    this.aclEntries(formArrayName).controls.splice(index, 1);
-  }
-
   onKeyTranslationValue(event: any, formArrayName: string, index: number): void {
     if (event.key === 'Enter' && !this.isAddTranslationButtonDisabled(formArrayName, index)) {
       this.addTranslation(formArrayName);
-    }
-  }
-
-  onKeyAclEntryValue(event: any, formArrayName: string, index: number): void {
-    if (event.key === 'Enter' && !this.isAddAclEntryButtonDisabled(formArrayName, index)) {
-      this.addAclEntry(formArrayName);
     }
   }
 
@@ -145,23 +116,6 @@ export class AddLinkComponent implements OnInit {
   }
 
   addLink(): void {
-    const isPublic = this.form.get('guest').value as boolean;
-    const accessControlEntry: AccessControlEntry = {
-      permission: 'read',
-      guest: isPublic,
-      users: isPublic ? [] : this.aclEntries('users').controls
-      .filter(value => value.get('value').value !== '')
-      .map(value => value.get('value').value),
-      roles: isPublic ? [] : this.aclEntries('roles').controls
-      .filter(value => value.get('value').value !== '')
-      .map(value => value.get('value').value),
-      groups: isPublic ? [] : this.aclEntries('groups').controls
-      .filter(value => value.get('value').value !== '')
-      .map(value => value.get('value').value)
-    };
-    const accessControlList: AccessControlList = {
-      entries: [accessControlEntry]
-    };
     const link: LinkSpecification = {
       order: this.form.get('order').value,
       href: this.form.get('href').value,
@@ -186,7 +140,9 @@ export class AddLinkComponent implements OnInit {
         };
         return translation;
       }),
-      acl: accessControlList
+      categoryIds: (this.form.get('categories') as FormArray).controls
+      .filter(value => value.get('selected').value === true)
+      .map(value => value.get('id').value)
     };
     this.linkService.addLink(link)
     .subscribe(() => {
