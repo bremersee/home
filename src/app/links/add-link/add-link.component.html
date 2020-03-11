@@ -138,6 +138,7 @@
         </div>
       </div>
 
+      <label>Categories</label>
       <div class="form-check" formArrayName="categories"
            *ngFor="let control of form.get('categories').value; let i=index">
         <ng-container [formGroupName]="i">
