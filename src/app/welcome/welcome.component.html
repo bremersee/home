@@ -3,8 +3,8 @@
     <h2>{{entries.category}}</h2>
   </div>
   <div class="row">
-    <div class="col-4" *ngFor="let link of entries.links">
-      <div class="card">
+    <div class="col-sm-6 col-md-4 col-lg-3 col-xl-3" *ngFor="let link of entries.links">
+      <div class="card card-menu">
         <div class="card-body">
           <a href="{{link.href}}" [target]="link.blank ? '_blank' : undefined">
             <h5 class="card-title">{{link.text}}</h5>
