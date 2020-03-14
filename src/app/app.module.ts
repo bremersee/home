@@ -27,6 +27,12 @@ import { EditCategoryComponent } from './categories/edit-category/edit-category.
 import { EditLinkComponent } from './links/edit-link/edit-link.component';
 import { DeleteCategoryComponent } from './categories/delete-category/delete-category.component';
 import { DeleteLinkComponent } from './links/delete-link/delete-link.component';
+import {CategoryService} from './shared/service/category.service';
+import {GroupService} from './shared/service/group.service';
+import {LanguageService} from './shared/service/language.service';
+import {LinkService} from './shared/service/link.service';
+import {MenuService} from './shared/service/menu.service';
+import {RoleService} from './shared/service/role.service';
 
 const keycloakService = new KeycloakService();
 
@@ -64,7 +70,13 @@ const keycloakService = new KeycloakService();
     {
       provide: KeycloakService,
       useValue: keycloakService
-    }
+    },
+    CategoryService,
+    GroupService,
+    LanguageService,
+    LinkService,
+    MenuService,
+    RoleService
   ],
   entryComponents: [AppComponent]
 })
