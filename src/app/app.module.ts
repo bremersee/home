@@ -1,50 +1,47 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {DoBootstrap, ErrorHandler, NgModule} from '@angular/core';
+import {HttpClientModule} from '@angular/common/http';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-
-import {AppRoutingModule} from './app-routing.module';
-import {HttpClientModule} from '@angular/common/http';
-import {AppComponent} from './app.component';
-import {WelcomeComponent} from './welcome/welcome.component';
-import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
-import {HeaderComponent} from './header/header.component';
-import {AuthComponent} from './header/auth/auth.component';
-import {environment} from '../environments/environment';
-import { CategoriesComponent } from './categories/categories.component';
-import { LinksComponent } from './links/links.component';
-import { SnackbarComponent } from './shared/snackbar/snackbar.component';
-import {GlobalErrorHandler} from './error/global-error-handler';
-import { AddCategoryComponent } from './categories/add-category/add-category.component';
-import { AddLinkComponent } from './links/add-link/add-link.component';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ReactiveFormsModule} from '@angular/forms';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {fas} from '@fortawesome/free-solid-svg-icons';
 import {far} from '@fortawesome/free-regular-svg-icons';
-import { EditCategoryComponent } from './categories/edit-category/edit-category.component';
-import { EditLinkComponent } from './links/edit-link/edit-link.component';
-import { DeleteCategoryComponent } from './categories/delete-category/delete-category.component';
-import { DeleteLinkComponent } from './links/delete-link/delete-link.component';
-import {CategoryService} from './shared/service/category.service';
-import {GroupService} from './shared/service/group.service';
-import {LanguageService} from './shared/service/language.service';
-import {LinkService} from './shared/service/link.service';
-import {MenuService} from './shared/service/menu.service';
-import {RoleService} from './shared/service/role.service';
+
+import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
+import {CookieService} from 'ngx-cookie-service';
+
+import {environment} from '../environments/environment';
+import {AppRoutingModule} from './app-routing.module';
+import {GlobalErrorHandler} from './error/global-error-handler';
+import {SnackbarComponent} from './shared/snackbar/snackbar.component';
+import {AppComponent} from './app.component';
+import {HeaderComponent} from './header/header.component';
+import {AuthComponent} from './header/auth/auth.component';
+import {WelcomeComponent} from './welcome/welcome.component';
+import {CategoriesComponent} from './categories/categories.component';
+import {LinksComponent} from './links/links.component';
+import {AddCategoryComponent} from './categories/add-category/add-category.component';
+import {AddLinkComponent} from './links/add-link/add-link.component';
+import {EditCategoryComponent} from './categories/edit-category/edit-category.component';
+import {EditLinkComponent} from './links/edit-link/edit-link.component';
+import {DeleteCategoryComponent} from './categories/delete-category/delete-category.component';
+import {DeleteLinkComponent} from './links/delete-link/delete-link.component';
+import {AppAuthGuard} from './app.authguard';
 
 const keycloakService = new KeycloakService();
 
 @NgModule({
   declarations: [
     AppComponent,
-    WelcomeComponent,
     HeaderComponent,
     AuthComponent,
+    SnackbarComponent,
+    WelcomeComponent,
     CategoriesComponent,
     LinksComponent,
-    SnackbarComponent,
     AddCategoryComponent,
     AddLinkComponent,
     EditCategoryComponent,
@@ -56,6 +53,7 @@ const keycloakService = new KeycloakService();
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
+    FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
     KeycloakAngularModule,
@@ -63,6 +61,7 @@ const keycloakService = new KeycloakService();
     FontAwesomeModule
   ],
   providers: [
+    CookieService,
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
@@ -71,12 +70,7 @@ const keycloakService = new KeycloakService();
       provide: KeycloakService,
       useValue: keycloakService
     },
-    CategoryService,
-    GroupService,
-    LanguageService,
-    LinkService,
-    MenuService,
-    RoleService
+    AppAuthGuard
   ],
   entryComponents: [AppComponent]
 })
@@ -94,7 +88,8 @@ export class AppModule implements DoBootstrap {
           flow: 'standard',
           onLoad: 'check-sso',
           silentCheckSsoRedirectUri: window.location.origin + environment.silentCheckSsoLocation,
-          pkceMethod: 'S256'
+          pkceMethod: 'S256',
+          promiseType: 'legacy'
         }
       });
       app.bootstrap(AppComponent);

@@ -42,9 +42,11 @@ RUN ng build --prod --baseHref /home/ --output-path dist
 FROM nginx:1.17.9-alpine
 
 COPY ./docker/nginx/default.conf /etc/nginx/conf.d
+COPY ./docker/nginx/index.html /usr/share/nginx/html
 
 # copy artifact build from the 'build environment'
-COPY --from=build /app/dist /usr/share/nginx/html
+RUN mkdir -p /usr/share/nginx/html/home
+COPY --from=build /app/dist /usr/share/nginx/html/home
 
 # expose port 80
 EXPOSE 80

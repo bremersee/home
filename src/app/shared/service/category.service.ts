@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 import {Observable} from 'rxjs';
-import {CategorySpecification} from '../model/category-specification';
 import {environment} from '../../../environments/environment';
+import {CategorySpecification} from '../model/category-specification';
 
 export {CategorySpecification} from '../model/category-specification';
 
