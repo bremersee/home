@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {KeycloakService} from 'keycloak-angular';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-auth',
@@ -22,7 +23,7 @@ export class AuthComponent implements OnInit {
   }
 
   async logout() {
-    await this.keycloakService.logout();
+    await this.keycloakService.logout(window.location.origin + environment.keycloakLogoutLocation);
   }
 
   get username() {

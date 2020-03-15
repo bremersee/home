@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   keycloakConfigLocation: '/assets/keycloak.json',
+  keycloakLogoutLocation: '',
   silentCheckSsoLocation: '/silent-check-sso.html',
   linkmanBaseUrl: 'https://api.dev.bremersee.org/linkman',
   adminRoles: ['ADMIN', 'LINK_ADMIN'],
