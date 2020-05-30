@@ -1,50 +1,63 @@
 pipeline {
   agent none
   environment {
-    SERVICE_NAME='home'
-    DOCKER_REGISTRY='bremersee/home'
-    DEV_TAG='latest'
-    PROD_TAG='release'
+    SERVICE_NAME = 'home'
+    DOCKER_REGISTRY = 'bremersee/home'
+    DEV_TAG = 'snapshot'
+    PROD_TAG = 'latest'
     DOCKER_CREDENTIALS = 'dockerhub'
-    DOCKER_IMAGE_WITH_BUILD_NUMBER=''
-    DOCKER_IMAGE_LATEST=''
-    DOCKER_IMAGE_RELEASE=''
+    DOCKER_IMAGE_WITH_BUILD_NUMBER = ''
+    DOCKER_IMAGE_SNAPSHOT = ''
+    DOCKER_IMAGE_LATEST = ''
+    DEV_BUILD = true
+    DEV_PUSH = true
+    DEV_DEPLOY = true
   }
   stages {
-    stage('Build docker image latest') {
+    stage('Build docker image snapshot') {
       agent {
         label 'maven'
       }
       when {
-        branch 'develop'
+        allOf {
+          branch 'develop'
+          environment name: 'DEV_BUILD', value: 'true'
+        }
       }
       steps {
         script {
-          DOCKER_IMAGE_LATEST = docker.build DOCKER_REGISTRY + ":$DEV_TAG"
+          DOCKER_IMAGE_SNAPSHOT = docker.build DOCKER_REGISTRY + ":$DEV_TAG"
         }
       }
     }
-    stage('Push docker image latest') {
+    stage('Push docker image snapshot') {
       agent {
         label 'maven'
       }
       when {
-        branch 'develop'
+        allOf {
+          branch 'develop'
+          environment name: 'DEV_BUILD', value: 'true'
+          environment name: 'DEV_PUSH', value: 'true'
+        }
       }
       steps {
         script {
           docker.withRegistry( '', DOCKER_CREDENTIALS ) {
-            DOCKER_IMAGE_LATEST.push();
+            DOCKER_IMAGE_SNAPSHOT.push();
           }
         }
       }
     }
-    stage('Remove docker image latest') {
+    stage('Remove docker image snapshot') {
       agent {
         label 'maven'
       }
       when {
-        branch 'develop'
+        allOf {
+          branch 'develop'
+          environment name: 'DEV_BUILD', value: 'true'
+        }
       }
       steps {
         script {
@@ -57,7 +70,10 @@ pipeline {
         label 'dev-swarm'
       }
       when {
-        branch 'develop'
+        allOf {
+          branch 'develop'
+          environment name: 'DEV_DEPLOY', value: 'true'
+        }
       }
       steps {
         sh '''
@@ -67,7 +83,7 @@ pipeline {
           else
             echo "Creating service ${SERVICE_NAME} with docker image ${DOCKER_REGISTRY}:${DEV_TAG}."
             chmod 755 docker-swarm/service.sh
-            docker-swarm/service.sh "${DOCKER_REGISTRY}:${DEV_TAG}"
+            docker-swarm/service.sh "${DOCKER_REGISTRY}:${DEV_TAG}" "swarm,dev" 1
           fi
         '''
       }
