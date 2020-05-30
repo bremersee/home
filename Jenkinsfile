@@ -12,6 +12,9 @@ pipeline {
     DEV_BUILD = true
     DEV_PUSH = true
     DEV_DEPLOY = true
+    PROD_BUILD = true
+    PROD_PUSH = true
+    PROD_DEPLOY = true
   }
   stages {
     stage('Build docker image snapshot') {
