@@ -16,6 +16,9 @@ pipeline {
     PROD_PUSH = true
     PROD_DEPLOY = true
   }
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '8', artifactNumToKeepStr: '8'))
+  }
   stages {
     stage('Build docker image snapshot') {
       agent {
