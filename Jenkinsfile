@@ -67,7 +67,8 @@ pipeline {
       }
       steps {
         script {
-          sh "docker rmi $DOCKER_REGISTRY:$DEV_TAG"
+          // sh "docker rmi $DOCKER_REGISTRY:$DEV_TAG"
+          sh "docker system prune -a -f"
         }
       }
     }
