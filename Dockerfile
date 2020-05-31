@@ -42,5 +42,4 @@ RUN ng build --prod --baseHref /home/ --output-path dist
 FROM bremersee/scs:snapshot
 
 # copy artifact build from the 'build environment'
-RUN mkdir /opt/content/home
-COPY --from=build /app/dist /opt/content/home
+COPY --from=build /app/dist /opt/content

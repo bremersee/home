@@ -13,8 +13,9 @@ docker service create \
   --constraint 'node.role==worker' \
   --constraint 'node.labels.primary==true' \
   -e APPLICATION_NAME='home' \
-  -e CONTENT_LOCATION='/opt/content/' \
-  -e ROOT_RESOURCE='index.html' \
+  -e SCS_PATTERN='/home/**' \
+  -e SCS_CONTENT_LOCATION='/opt/content/' \
+  -e SCS_INDEX='index.html' \
   -e ACTIVE_PROFILES=$2 \
   -e CONFIG_CLIENT_ENABLED='true' \
   -e CONFIG_URI='http://config-server' \
