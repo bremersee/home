@@ -1,4 +1,8 @@
 #!/usr/bin/env sh
+#  -e APPLICATION_NAME='home' \
+#  -e SCS_PATTERN='/home/**' \
+#  -e SCS_CONTENT_LOCATION='/opt/content/' \
+#  -e SCS_INDEX='index.html' \
 docker service create \
   --replicas $3 \
   --name home \
@@ -12,10 +16,6 @@ docker service create \
   --update-delay 10s \
   --constraint 'node.role==worker' \
   --constraint 'node.labels.primary==true' \
-  -e APPLICATION_NAME='home' \
-  -e SCS_PATTERN='/home/**' \
-  -e SCS_CONTENT_LOCATION='/opt/content/' \
-  -e SCS_INDEX='index.html' \
   -e ACTIVE_PROFILES=$2 \
   -e CONFIG_CLIENT_ENABLED='true' \
   -e CONFIG_URI='http://config-server' \
