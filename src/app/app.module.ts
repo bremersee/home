@@ -88,8 +88,7 @@ export class AppModule implements DoBootstrap {
           flow: 'standard',
           onLoad: 'check-sso',
           silentCheckSsoRedirectUri: window.location.origin + environment.silentCheckSsoLocation,
-          pkceMethod: 'S256',
-          promiseType: 'legacy'
+          pkceMethod: 'S256'
         }
       });
       app.bootstrap(AppComponent);
