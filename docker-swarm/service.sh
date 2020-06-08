@@ -1,8 +1,4 @@
 #!/usr/bin/env sh
-#  -e APPLICATION_NAME='home' \
-#  -e SCS_PATTERN='/home/**' \
-#  -e SCS_CONTENT_LOCATION='/opt/content/' \
-#  -e SCS_INDEX='index.html' \
 docker service create \
   --replicas $3 \
   --name home \
