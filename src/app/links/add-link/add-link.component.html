@@ -159,6 +159,14 @@
                (change)="onMenuImageChange($event)">
         <small id="menuImageHelp" class="form-text text-muted">Choose a menu image.</small>
       </div>
+      <image-cropper
+        [imageFile]="cardImageFile"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="4 / 3"
+        format="png"
+        (imageCropped)="cardImageCropped($event)"
+      ></image-cropper>
+
 
       <label>Categories</label>
       <div class="form-check" formArrayName="categories"

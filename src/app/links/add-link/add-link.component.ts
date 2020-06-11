@@ -10,6 +10,7 @@ import {LocaleDescription} from '../../shared/model/locale-description';
 import {Translation} from '../../shared/model/translation';
 import {CategorySpecification} from '../../shared/model/category-specification';
 import {CategoryService} from '../../shared/service/category.service';
+import {ImageCroppedEvent} from 'ngx-image-cropper';
 
 @Component({
   selector: 'app-add-link',
@@ -31,6 +32,16 @@ export class AddLinkComponent implements OnInit {
   form: FormGroup;
 
   formData: FormData;
+
+  cardImageChangeEvent: any = '';
+
+  menuImageChangeEvent: any = '';
+
+  cardImageFile: any = null;
+
+  croppedCardImage: any = '';
+
+  croppedMenuImage: any = '';
 
   constructor(private router: Router,
               private formBuilder: FormBuilder,
@@ -122,16 +133,24 @@ export class AddLinkComponent implements OnInit {
 
   onCardImageChange(event): void {
     console.log(event);
+    this.cardImageChangeEvent = event;
     this.formData.delete('cardImage');
     if (event.target.files.length > 0) {
+      if (event.target.files[0].type.contains('svg')) {
+
+      } else {
+        this.cardImageFile = event.target.files[0];
+      }
       const file = event.target.files[0];
       this.formData.append('cardImage', file, file.name);
     } else {
       this.form.get('cardImage').setValue('');
+      this.cardImageFile = null;
     }
   }
 
   onMenuImageChange(event): void {
+    this.menuImageChangeEvent = event;
     this.formData.delete('menuImage');
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
@@ -139,6 +158,10 @@ export class AddLinkComponent implements OnInit {
     } else {
       this.form.get('menuImage').setValue('');
     }
+  }
+
+  cardImageCropped(event: ImageCroppedEvent): void {
+    this.croppedCardImage = event.base64;
   }
 
   addLink(): void {

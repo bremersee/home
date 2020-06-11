@@ -30,6 +30,7 @@ import {EditLinkComponent} from './links/edit-link/edit-link.component';
 import {DeleteCategoryComponent} from './categories/delete-category/delete-category.component';
 import {DeleteLinkComponent} from './links/delete-link/delete-link.component';
 import {AppAuthGuard} from './app.authguard';
+import {ImageCropperModule} from 'ngx-image-cropper';
 
 const keycloakService = new KeycloakService();
 
@@ -58,7 +59,8 @@ const keycloakService = new KeycloakService();
     AppRoutingModule,
     KeycloakAngularModule,
     NgbModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    ImageCropperModule
   ],
   providers: [
     CookieService,
