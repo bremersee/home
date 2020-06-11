@@ -52,4 +52,14 @@ export interface LinkSpecification {
    */
   descriptionTranslations?: Array<Translation>;
 
+  /**
+   * The card image URL.
+   */
+  cardImageUrl?: string;
+
+  /**
+   * The menu entry URL.
+   */
+  menuImageUrl?: string;
+
 }

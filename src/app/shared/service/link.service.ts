@@ -71,6 +71,20 @@ export class LinkService {
     });
   }
 
+  updateLinkImages(id: string, formData: FormData): Observable<LinkSpecification> {
+    if (id === null || id === undefined) {
+      throw new Error('Required parameter id was null or undefined when calling saveLinkImages.');
+    }
+    if (formData === null || formData === undefined) {
+      throw new Error('Required parameter body was null or undefined when calling saveLinkImages.');
+    }
+    const httpHeaders = new HttpHeaders()
+    .set('Accept', 'application/json');
+    return this.http.post<LinkSpecification>(`${this.baseUrl}/api/links/${encodeURIComponent(String(id))}/images`, formData, {
+      headers: httpHeaders
+    });
+  }
+
   deleteLink(id: string): Observable<void> {
     if (id === null || id === undefined) {
       throw new Error('Required parameter id was null or undefined when calling deleteLink.');

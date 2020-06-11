@@ -138,6 +138,28 @@
         </div>
       </div>
 
+      <div class="form-group">
+        <label for="cardImage">Card image</label>
+        <input type="file" class="form-control-file"
+               id="cardImage" name="cardImage"
+               aria-describedby="cardImageHelp"
+               formControlName="cardImage"
+               accept="image/*"
+               (change)="onCardImageChange($event)">
+        <small id="cardImageHelp" class="form-text text-muted">Choose a card image.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="menuImage">Card image</label>
+        <input type="file" class="form-control-file"
+               id="menuImage" name="menuImage"
+               aria-describedby="menuImageHelp"
+               formControlName="menuImage"
+               accept="image/*"
+               (change)="onMenuImageChange($event)">
+        <small id="menuImageHelp" class="form-text text-muted">Choose a menu image.</small>
+      </div>
+
       <label>Categories</label>
       <div class="form-check" formArrayName="categories"
            *ngFor="let control of form.get('categories').value; let i=index">

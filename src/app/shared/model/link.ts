@@ -14,11 +14,6 @@ export interface Link {
   href: string;
 
   /**
-   * The type.
-   */
-  type?: string;
-
-  /**
    * Specified whether to open the link in a blank target (default is false).
    */
   blank?: boolean;
@@ -32,5 +27,15 @@ export interface Link {
    * A short description.
    */
   description?: string;
+
+  /**
+   * The card image URL.
+   */
+  cardImageUrl?: string;
+
+  /**
+   * The menu entry URL.
+   */
+  menuImageUrl?: string;
 
 }

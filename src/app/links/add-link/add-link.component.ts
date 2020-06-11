@@ -30,6 +30,8 @@ export class AddLinkComponent implements OnInit {
 
   form: FormGroup;
 
+  formData: FormData;
+
   constructor(private router: Router,
               private formBuilder: FormBuilder,
               private snackbar: SnackbarService,
@@ -43,6 +45,7 @@ export class AddLinkComponent implements OnInit {
     this.language = navigator.language || navigator.userLanguage;
     this.languages = this.languageService.getAvailableLanguages(this.language);
     this.categories = this.categoryService.getCategories();
+    this.formData = new FormData();
   }
 
   buildForm(availableLanguages: Array<LocaleDescription>, availableCategories: Array<CategorySpecification>): FormGroup {
@@ -60,6 +63,8 @@ export class AddLinkComponent implements OnInit {
         textTranslations: this.formBuilder.array([this.createTranslationItem(selectedLanguage)]),
         description: ['', Validators.required],
         descriptionTranslations: this.formBuilder.array([this.createTranslationItem(selectedLanguage)]),
+        cardImage: [''],
+        menuImage: [''],
         categories: this.formBuilder.array(this.createSelectedCategories(availableCategories))
       });
     }
@@ -115,6 +120,27 @@ export class AddLinkComponent implements OnInit {
     this.translations(formArrayName).controls[index].get('languageSelector').setValue(value);
   }
 
+  onCardImageChange(event): void {
+    console.log(event);
+    this.formData.delete('cardImage');
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      this.formData.append('cardImage', file, file.name);
+    } else {
+      this.form.get('cardImage').setValue('');
+    }
+  }
+
+  onMenuImageChange(event): void {
+    this.formData.delete('menuImage');
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      this.formData.append('menuImage', file, file.name);
+    } else {
+      this.form.get('menuImage').setValue('');
+    }
+  }
+
   addLink(): void {
     const link: LinkSpecification = {
       order: this.form.get('order').value,
@@ -145,9 +171,17 @@ export class AddLinkComponent implements OnInit {
       .map(value => value.get('id').value)
     };
     this.linkService.addLink(link)
-    .subscribe(() => {
-      this.router.navigate(['/links'])
-      .then(() => this.snackbar.show('Link successfully added.'));
+    .subscribe((linkSpec) => {
+      if (this.form.get('cardImage').value !== '' || this.form.get('menuImage').value !== '') {
+        this.linkService.updateLinkImages(linkSpec.id, this.formData)
+        .subscribe(() => {
+          this.router.navigate(['/links'])
+          .then(() => this.snackbar.show('Link successfully added.'));
+        });
+      } else {
+        this.router.navigate(['/links'])
+        .then(() => this.snackbar.show('Link successfully added.'));
+      }
     });
   }
 
