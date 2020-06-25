@@ -71,7 +71,7 @@ export class EditLinkComponent implements OnInit {
         blank: [link.blank],
         text: [link.text, Validators.required],
         textTranslations: this.formBuilder.array(this.createTranslationItems(link.textTranslations, selectedLanguage)),
-        description: [link.description, Validators.required],
+        description: [link.description],
         descriptionTranslations: this.formBuilder.array(this.createTranslationItems(link.descriptionTranslations, selectedLanguage)),
         categories: this.formBuilder.array(this.createSelectedCategories(availableCategories, link.categoryIds))
       });

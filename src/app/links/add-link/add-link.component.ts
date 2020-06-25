@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SnackbarService} from '../../shared/snackbar/snackbar.service';
 import {LanguageService} from '../../shared/service/language.service';
 import {LinkService, LinkSpecification} from '../../shared/service/link.service';
@@ -10,7 +10,8 @@ import {LocaleDescription} from '../../shared/model/locale-description';
 import {Translation} from '../../shared/model/translation';
 import {CategorySpecification} from '../../shared/model/category-specification';
 import {CategoryService} from '../../shared/service/category.service';
-import {ImageCroppedEvent} from 'ngx-image-cropper';
+import {Dimensions, ImageCroppedEvent} from 'ngx-image-cropper';
+import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-add-link',
@@ -31,24 +32,25 @@ export class AddLinkComponent implements OnInit {
 
   form: FormGroup;
 
-  formData: FormData;
+  imageFormData: FormData;
 
-  cardImageChangeEvent: any = '';
-
-  menuImageChangeEvent: any = '';
+  cardImageUrl: any;
 
   cardImageFile: any = null;
 
-  croppedCardImage: any = '';
+  cardImageWidth = 1;
 
-  croppedMenuImage: any = '';
+  cardImageHeight = 1;
+
+  maintainCardImageAspectRatio = false;
 
   constructor(private router: Router,
               private formBuilder: FormBuilder,
               private snackbar: SnackbarService,
               private linkService: LinkService,
               private languageService: LanguageService,
-              private categoryService: CategoryService) {
+              private categoryService: CategoryService,
+              private sanitizer: DomSanitizer) {
   }
 
   ngOnInit() {
@@ -56,7 +58,7 @@ export class AddLinkComponent implements OnInit {
     this.language = navigator.language || navigator.userLanguage;
     this.languages = this.languageService.getAvailableLanguages(this.language);
     this.categories = this.categoryService.getCategories();
-    this.formData = new FormData();
+    this.imageFormData = new FormData();
   }
 
   buildForm(availableLanguages: Array<LocaleDescription>, availableCategories: Array<CategorySpecification>): FormGroup {
@@ -72,10 +74,8 @@ export class AddLinkComponent implements OnInit {
         blank: [false],
         text: ['', Validators.required],
         textTranslations: this.formBuilder.array([this.createTranslationItem(selectedLanguage)]),
-        description: ['', Validators.required],
+        description: [''],
         descriptionTranslations: this.formBuilder.array([this.createTranslationItem(selectedLanguage)]),
-        cardImage: [''],
-        menuImage: [''],
         categories: this.formBuilder.array(this.createSelectedCategories(availableCategories))
       });
     }
@@ -132,37 +132,46 @@ export class AddLinkComponent implements OnInit {
   }
 
   onCardImageChange(event): void {
-    console.log(event);
-    this.cardImageChangeEvent = event;
-    this.formData.delete('cardImage');
+    // console.log(event);
+    this.imageFormData.delete('cardImage');
     if (event.target.files.length > 0) {
-      if (event.target.files[0].type.contains('svg')) {
-
-      } else {
-        this.cardImageFile = event.target.files[0];
-      }
       const file = event.target.files[0];
-      this.formData.append('cardImage', file, file.name);
+      this.cardImageFile = file;
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (e) => {
+        this.cardImageUrl = this.sanitizer.bypassSecurityTrustUrl(e.target.result as string);
+        this.imageFormData.append('cardImage', this.cardImageUrl);
+      };
     } else {
-      this.form.get('cardImage').setValue('');
+      this.cardImageUrl = undefined;
       this.cardImageFile = null;
     }
   }
 
-  onMenuImageChange(event): void {
-    this.menuImageChangeEvent = event;
-    this.formData.delete('menuImage');
-    if (event.target.files.length > 0) {
-      const file = event.target.files[0];
-      this.formData.append('menuImage', file, file.name);
-    } else {
-      this.form.get('menuImage').setValue('');
-    }
+  cardImageCropperReady(dimensions: Dimensions): void {
+    this.cardImageHeight = dimensions.height;
+    this.cardImageWidth = dimensions.width;
   }
 
   cardImageCropped(event: ImageCroppedEvent): void {
-    this.croppedCardImage = event.base64;
+    this.imageFormData.delete('cardImage');
+    this.cardImageUrl = event.base64;
+    this.imageFormData.append('cardImage', this.cardImageUrl);
   }
+
+  /*
+  convertDataUri(dataUri): Blob {
+    const byteString = atob(dataUri.split(',')[1]);
+    const mimeString = dataUri.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
+  }
+  */
 
   addLink(): void {
     const link: LinkSpecification = {
@@ -195,8 +204,9 @@ export class AddLinkComponent implements OnInit {
     };
     this.linkService.addLink(link)
     .subscribe((linkSpec) => {
-      if (this.form.get('cardImage').value !== '' || this.form.get('menuImage').value !== '') {
-        this.linkService.updateLinkImages(linkSpec.id, this.formData)
+      if (this.imageFormData.get('cardImage') !== undefined && this.imageFormData.get('cardImage') !== null) {
+        console.log('Uploading image');
+        this.linkService.updateLinkImages(linkSpec.id, this.imageFormData)
         .subscribe(() => {
           this.router.navigate(['/links'])
           .then(() => this.snackbar.show('Link successfully added.'));
