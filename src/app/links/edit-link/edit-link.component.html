@@ -1,163 +1,242 @@
 <div class="row">
-  <h2 class="col">
-    Edit link
-  </h2>
   <div class="col text-right align-content-center">
     <a routerLink="/links">Back</a>
   </div>
 </div>
+<div class="row">
+  <h2 class="col">
+    Edit link
+  </h2>
+</div>
 <ng-container *ngIf="{ linkSpecification: link | async, availableLanguages: languages | async, availableCategories: categories | async } as model">
   <ng-container *ngIf="model.availableLanguages as availableLanguages">
     <ng-container *ngIf="model.availableCategories as availableCategories">
+
       <form *ngIf="model.linkSpecification as linkSpecification" [formGroup]="buildForm(linkSpecification, availableLanguages, availableCategories)"
             (ngSubmit)="updateLink()">
-        <div class="form-group">
-          <label for="order">Sort order</label>
-          <input type="number" class="form-control"
-                 [ngClass]="form.get('order').errors ? 'is-invalid' : ''"
-                 id="order" name="order"
-                 aria-describedby="orderHelp"
-                 formControlName="order">
-          <small id="orderHelp" class="form-text text-muted">Please type in the sort order
-            value.</small>
-        </div>
 
-        <div class="form-group">
-          <label for="href">Link</label>
-          <input type="text" class="form-control"
-                 [ngClass]="form.get('href').errors ? 'is-invalid' : ''"
-                 id="href" name="href"
-                 aria-describedby="hrefHelp" placeholder="http://bremersee.org"
-                 formControlName="href">
-          <small id="hrefHelp" class="form-text text-muted">Please type in the link location.</small>
-        </div>
+        <!-- edit and preview row end -->
+        <div class="row">
 
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="blank" name="blank"
-                 formControlName="blank">
-          <label class="form-check-label" for="blank">
-            Open in new target
-          </label>
-        </div>
+          <!-- edit col end -->
+          <div class="col">
+            <div class="form-group">
+              <label for="order">Sort order</label>
+              <input type="number" class="form-control"
+                     [ngClass]="form.get('order').errors ? 'is-invalid' : ''"
+                     id="order" name="order"
+                     aria-describedby="orderHelp"
+                     formControlName="order">
+              <small id="orderHelp" class="form-text text-muted">Please type in the sort order
+                value.</small>
+            </div>
 
-        <div class="form-group pt-3">
-          <label for="text">Text</label>
-          <input type="text" class="form-control"
-                 [ngClass]="form.get('text').errors ? 'is-invalid' : ''"
-                 id="text" name="text"
-                 aria-describedby="textHelp" placeholder="Bremersee home page"
-                 formControlName="text">
-          <small id="textHelp" class="form-text text-muted">Please type in the displayed text of the
-            link.</small>
-        </div>
+            <div class="form-group">
+              <label for="href">Link</label>
+              <input type="text" class="form-control"
+                     [ngClass]="form.get('href').errors ? 'is-invalid' : ''"
+                     id="href" name="href"
+                     aria-describedby="hrefHelp" placeholder="http://bremersee.org"
+                     formControlName="href">
+              <small id="hrefHelp" class="form-text text-muted">Please type in the link location.</small>
+            </div>
 
-        <div class="form-group">
-          <label>Text translations</label> <!-- formArrayName="translations" -->
-          <div formArrayName="textTranslations"
-               *ngFor="let control of translations('textTranslations').controls; let i=index">
-            <div [formGroupName]="i" class="form-row pb-2">
-              <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
-                <input class="form-control" formControlName="language" type="text"
-                       (keyup)="onKeyTranslationValue($event, 'textTranslations', i)"
-                       (change)="fromLanguageToLanguageSelector('textTranslations', i)">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="blank" name="blank"
+                     formControlName="blank">
+              <label class="form-check-label" for="blank">
+                Open in new target
+              </label>
+            </div>
+
+            <div class="form-group pt-3">
+              <label for="text">Text</label>
+              <input type="text" class="form-control"
+                     [ngClass]="form.get('text').errors ? 'is-invalid' : ''"
+                     id="text" name="text"
+                     aria-describedby="textHelp" placeholder="Bremersee home page"
+                     formControlName="text">
+              <small id="textHelp" class="form-text text-muted">Please type in the displayed text of the
+                link.</small>
+            </div>
+
+            <div class="form-group">
+              <label>Text translations</label> <!-- formArrayName="translations" -->
+              <div formArrayName="textTranslations"
+                   *ngFor="let control of translations('textTranslations').controls; let i=index">
+                <div [formGroupName]="i" class="form-row pb-2">
+                  <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+                    <input class="form-control" formControlName="language" type="text"
+                           (keyup)="onKeyTranslationValue($event, 'textTranslations', i)"
+                           (change)="fromLanguageToLanguageSelector('textTranslations', i)">
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3">
+                    <select class="form-control" formControlName="languageSelector"
+                            (change)="fromLanguageSelectorToLanguage('textTranslations', i)">
+                      <option *ngFor="let lang of availableLanguages" value="{{lang.locale}}">
+                        {{lang.description}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col">
+                    <input class="form-control" formControlName="value" type="text"
+                           (keyup)="onKeyTranslationValue($event, 'textTranslations', i)">
+                  </div>
+                  <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+                    <button type="button" class="btn btn-outline-primary w-100"
+                            *ngIf="i === translations('textTranslations').length - 1"
+                            [disabled]="isAddTranslationButtonDisabled('textTranslations', i)"
+                            (click)="addTranslation('textTranslations')">
+                      <fa-icon [icon]="plusIcon"></fa-icon>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary w-100"
+                            *ngIf="i < translations('textTranslations').length - 1"
+                            (click)="removeTranslation('textTranslations', i)">
+                      <fa-icon [icon]="minusIcon"></fa-icon>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3">
-                <select class="form-control" formControlName="languageSelector"
-                        (change)="fromLanguageSelectorToLanguage('textTranslations', i)">
-                  <option *ngFor="let lang of availableLanguages" value="{{lang.locale}}">
-                    {{lang.description}}
-                  </option>
-                </select>
+            </div>
+
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="displayText" name="displayText"
+                     formControlName="displayText">
+              <label class="form-check-label" for="displayText">
+                Display text
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label for="description">Description</label>
+              <input type="text" class="form-control"
+                     [ngClass]="form.get('description').errors ? 'is-invalid' : ''"
+                     id="description" name="description"
+                     aria-describedby="descriptionHelp"
+                     placeholder="The home page of bremersee is fantastic."
+                     formControlName="description">
+              <small id="descriptionHelp" class="form-text text-muted">Please type in the description of
+                the link.</small>
+            </div>
+
+            <div class="form-group">
+              <label>Description translations</label>
+              <div formArrayName="descriptionTranslations"
+                   *ngFor="let control of translations('descriptionTranslations').controls; let i=index">
+                <div [formGroupName]="i" class="form-row pb-2">
+                  <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+                    <input class="form-control" formControlName="language" type="text"
+                           (keyup)="onKeyTranslationValue($event, 'descriptionTranslations', i)"
+                           (change)="fromLanguageToLanguageSelector('descriptionTranslations', i)">
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3">
+                    <select class="form-control" formControlName="languageSelector"
+                            (change)="fromLanguageSelectorToLanguage('descriptionTranslations', i)">
+                      <option *ngFor="let lang of availableLanguages" value="{{lang.locale}}">
+                        {{lang.description}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col">
+                    <input class="form-control" formControlName="value" type="text"
+                           (keyup)="onKeyTranslationValue($event, 'descriptionTranslations', i)">
+                  </div>
+                  <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
+                    <button type="button" class="btn btn-outline-primary w-100"
+                            *ngIf="i === translations('descriptionTranslations').length - 1"
+                            [disabled]="isAddTranslationButtonDisabled('descriptionTranslations', i)"
+                            (click)="addTranslation('descriptionTranslations')">
+                      <fa-icon [icon]="plusIcon"></fa-icon>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary w-100"
+                            *ngIf="i < translations('descriptionTranslations').length - 1"
+                            (click)="removeTranslation('descriptionTranslations', i)">
+                      <fa-icon [icon]="minusIcon"></fa-icon>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div class="col">
-                <input class="form-control" formControlName="value" type="text"
-                       (keyup)="onKeyTranslationValue($event, 'textTranslations', i)">
+            </div>
+
+            <label>Categories</label>
+            <div class="form-check" formArrayName="categories"
+                 *ngFor="let control of form.get('categories').value; let i=index">
+              <ng-container [formGroupName]="i">
+                <input class="form-check-input" type="checkbox" formControlName="selected">
+                <label class="form-check-label">
+                  {{availableCategories[i].name}}
+                </label>
+              </ng-container>
+            </div>
+          </div>
+          <!-- edit col end -->
+
+          <!-- preview col start -->
+          <div class="col-sm-6 col-md-4 col-lg-3 col-xl-3">
+            <label>Preview</label>
+            <div class="card mb-sm-3 mb-md-3 mb-lg-3 mb-xl-3">
+              <img *ngIf="cardImageUrl" class="card-img-top" [src]="cardImageUrl">
+              <div class="card-body">
+                <ng-container *ngIf="form.value.displayText">
+                  <h5 *ngIf="!form.value.text" class="card-title">Text</h5>
+                  <h5 *ngIf="form.value.text" class="card-title">{{form.value.text}}</h5>
+                </ng-container>
+                <p *ngIf="!form.value.description" class="card-text">Description</p>
+                <p *ngIf="form.value.description" class="card-text">{{form.value.description}}</p>
+                <a class="btn btn-primary" style="width: 100%">
+                  Open
+                </a>
               </div>
-              <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
-                <button type="button" class="btn btn-outline-primary w-100"
-                        *ngIf="i === translations('textTranslations').length - 1"
-                        [disabled]="isAddTranslationButtonDisabled('textTranslations', i)"
-                        (click)="addTranslation('textTranslations')">
-                  <fa-icon [icon]="plusIcon"></fa-icon>
-                </button>
-                <button type="button" class="btn btn-outline-primary w-100"
-                        *ngIf="i < translations('textTranslations').length - 1"
-                        (click)="removeTranslation('textTranslations', i)">
-                  <fa-icon [icon]="minusIcon"></fa-icon>
+            </div>
+
+            <div *ngIf="cardImageUrl" class="form-check mb-sm-3 mb-md-3 mb-lg-3 mb-xl-3">
+              <input class="form-check-input" type="checkbox"
+                     id="deleteCardImage" name="deleteCardImage"
+                     (change)="onToggleDeleteCardImage($event)">
+              <label class="form-check-label" for="deleteCardImage">
+                Delete image
+              </label>
+            </div>
+
+            <div *ngIf="!deleteCardImage" class="form-group mb-sm-3 mb-md-3 mb-lg-3 mb-xl-3">
+              <label for="cardImage">Image</label>
+              <input type="file" class="form-control-file"
+                     id="cardImage" name="cardImage"
+                     aria-describedby="cardImageHelp"
+                     accept="image/*"
+                     (change)="onCardImageChange($event)" />
+              <small id="cardImageHelp" class="form-text text-muted">Choose an image.</small>
+            </div>
+
+            <div *ngIf="cardImageFile !== null && !deleteCardImage">
+              <image-cropper
+                class="img-cropper"
+                id="cardImageCropper"
+                format="png"
+                alignImage="left"
+                [imageFile]="cardImageFile"
+                [maintainAspectRatio]="maintainCardImageAspectRatio"
+                [aspectRatio]="cardImageWidth / cardImageHeight"
+                (imageCropped)="cardImageCropped($event)"
+                (cropperReady)="cardImageCropperReady($event)">
+              </image-cropper>
+            </div>
+          </div>
+          <!-- preview col end -->
+
+        </div>
+        <!-- edit and preview row end -->
+
+        <div class="row">
+          <div class="col">
+            <div class="row pt-4 pb-5 ml-2">
+              <div class="flex-column pr-2">
+                <button type="submit" class="btn btn-primary"
+                        [disabled]="!form.valid">
+                  Update link
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="description">Description</label>
-          <input type="text" class="form-control"
-                 [ngClass]="form.get('description').errors ? 'is-invalid' : ''"
-                 id="description" name="description"
-                 aria-describedby="descriptionHelp"
-                 placeholder="The home page of bremersee is fantastic."
-                 formControlName="description">
-          <small id="descriptionHelp" class="form-text text-muted">Please type in the description of
-            the link.</small>
-        </div>
-
-        <div class="form-group">
-          <label>Description translations</label>
-          <div formArrayName="descriptionTranslations"
-               *ngFor="let control of translations('descriptionTranslations').controls; let i=index">
-            <div [formGroupName]="i" class="form-row pb-2">
-              <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
-                <input class="form-control" formControlName="language" type="text"
-                       (keyup)="onKeyTranslationValue($event, 'descriptionTranslations', i)"
-                       (change)="fromLanguageToLanguageSelector('descriptionTranslations', i)">
-              </div>
-              <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3">
-                <select class="form-control" formControlName="languageSelector"
-                        (change)="fromLanguageSelectorToLanguage('descriptionTranslations', i)">
-                  <option *ngFor="let lang of availableLanguages" value="{{lang.locale}}">
-                    {{lang.description}}
-                  </option>
-                </select>
-              </div>
-              <div class="col">
-                <input class="form-control" formControlName="value" type="text"
-                       (keyup)="onKeyTranslationValue($event, 'descriptionTranslations', i)">
-              </div>
-              <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2">
-                <button type="button" class="btn btn-outline-primary w-100"
-                        *ngIf="i === translations('descriptionTranslations').length - 1"
-                        [disabled]="isAddTranslationButtonDisabled('descriptionTranslations', i)"
-                        (click)="addTranslation('descriptionTranslations')">
-                  <fa-icon [icon]="plusIcon"></fa-icon>
-                </button>
-                <button type="button" class="btn btn-outline-primary w-100"
-                        *ngIf="i < translations('descriptionTranslations').length - 1"
-                        (click)="removeTranslation('descriptionTranslations', i)">
-                  <fa-icon [icon]="minusIcon"></fa-icon>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <label>Categories</label>
-        <div class="form-check" formArrayName="categories"
-             *ngFor="let control of form.get('categories').value; let i=index">
-          <ng-container [formGroupName]="i">
-            <input class="form-check-input" type="checkbox" formControlName="selected">
-            <label class="form-check-label">
-              {{availableCategories[i].name}}
-            </label>
-          </ng-container>
-        </div>
-
-        <div class="row pt-4 pb-5 ml-2">
-          <div class="flex-column pr-2">
-            <button type="submit" class="btn btn-primary"
-                    [disabled]="!form.valid">
-              Update link
-            </button>
           </div>
         </div>
       </form>

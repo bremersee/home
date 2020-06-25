@@ -85,6 +85,27 @@ export class LinkService {
     });
   }
 
+  deleteLinkImages(id: string, ...linkImageTypes: string[]): Observable<LinkSpecification> {
+    if (id === null || id === undefined) {
+      throw new Error('Required parameter id was null or undefined when calling deleteLink.');
+    }
+    let names: string[];
+    if (linkImageTypes === null || linkImageTypes === undefined || linkImageTypes.length === 0) {
+      names = new Array<string>();
+      names.push('cardImage');
+    } else {
+      names = linkImageTypes;
+    }
+    const httpHeaders = new HttpHeaders()
+    .set('Accept', 'application/json');
+    return this.http.delete<LinkSpecification>(`${this.baseUrl}/api/links/${encodeURIComponent(String(id))}/images`, {
+      headers: httpHeaders,
+      params: {
+        name: names
+      }
+    });
+  }
+
   deleteLink(id: string): Observable<void> {
     if (id === null || id === undefined) {
       throw new Error('Required parameter id was null or undefined when calling deleteLink.');

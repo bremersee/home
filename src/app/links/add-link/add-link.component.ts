@@ -74,6 +74,7 @@ export class AddLinkComponent implements OnInit {
         blank: [false],
         text: ['', Validators.required],
         textTranslations: this.formBuilder.array([this.createTranslationItem(selectedLanguage)]),
+        displayText: [true],
         description: [''],
         descriptionTranslations: this.formBuilder.array([this.createTranslationItem(selectedLanguage)]),
         categories: this.formBuilder.array(this.createSelectedCategories(availableCategories))
@@ -188,6 +189,7 @@ export class AddLinkComponent implements OnInit {
         };
         return translation;
       }),
+      displayText: this.form.get('displayText').value,
       description: this.form.get('description').value,
       descriptionTranslations: this.translations('descriptionTranslations').controls
       .filter(value => value.get('language').value !== '' && value.get('value').value !== '')
@@ -205,7 +207,6 @@ export class AddLinkComponent implements OnInit {
     this.linkService.addLink(link)
     .subscribe((linkSpec) => {
       if (this.imageFormData.get('cardImage') !== undefined && this.imageFormData.get('cardImage') !== null) {
-        console.log('Uploading image');
         this.linkService.updateLinkImages(linkSpec.id, this.imageFormData)
         .subscribe(() => {
           this.router.navigate(['/links'])

@@ -24,6 +24,11 @@ export interface Link {
   text?: string;
 
   /**
+   * Specifies whether link text should be displayed or not.
+   */
+  displayText?: boolean;
+
+  /**
    * A short description.
    */
   description?: string;

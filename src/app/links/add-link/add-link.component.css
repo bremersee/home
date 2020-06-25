@@ -1,10 +1,4 @@
-.card-menu-preview {
-  margin-bottom: 1rem;
-}
 .img-cropper {
   --cropper-outline-color: #272b30;
   --cropper-overlay-color: #272b30;
-  top: 1rem;
-  margin-bottom: 1rem;
 }
-

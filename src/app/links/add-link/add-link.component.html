@@ -8,7 +8,6 @@
     Add link
   </h2>
 </div>
-<!-- <ng-container *ngIf="languages | async as availableLanguages"> -->
 <ng-container *ngIf="{ availableLanguages: languages | async, availableCategories: categories | async } as model">
   <ng-container *ngIf="model.availableLanguages as availableLanguages">
 
@@ -94,6 +93,14 @@
             </div>
           </div>
 
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="displayText" name="displayText"
+                   formControlName="displayText">
+            <label class="form-check-label" for="displayText">
+              Display text
+            </label>
+          </div>
+
           <div class="form-group">
             <label for="description">Description</label>
             <input type="text" class="form-control"
@@ -155,24 +162,17 @@
               </label>
             </ng-container>
           </div>
-
-          <div class="row pt-4 pb-5 ml-2">
-            <div class="flex-column pr-2">
-              <button type="submit" class="btn btn-primary"
-                      [disabled]="!form.valid">
-                Add link
-              </button>
-            </div>
-          </div>
         </div>
 
         <div class="col-sm-6 col-md-4 col-lg-3 col-xl-3">
           <label>Preview</label>
-          <div class="card card-menu-preview">
+          <div class="card mb-sm-3 mb-md-3 mb-lg-3 mb-xl-3">
             <img *ngIf="cardImageUrl" class="card-img-top" [src]="cardImageUrl">
             <div class="card-body">
-              <h5 *ngIf="!form.value.text" class="card-title">Text</h5>
-              <h5 *ngIf="form.value.text" class="card-title">{{form.value.text}}</h5>
+              <ng-container *ngIf="form.value.displayText">
+                <h5 *ngIf="!form.value.text" class="card-title">Text</h5>
+                <h5 *ngIf="form.value.text" class="card-title">{{form.value.text}}</h5>
+              </ng-container>
               <p *ngIf="!form.value.description" class="card-text">Description</p>
               <p *ngIf="form.value.description" class="card-text">{{form.value.description}}</p>
               <a class="btn btn-primary" style="width: 100%">
@@ -181,7 +181,7 @@
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form-group mb-sm-3 mb-md-3 mb-lg-3 mb-xl-3">
             <label for="cardImage">Image</label>
             <input type="file" class="form-control-file"
                    id="cardImage" name="cardImage"
@@ -203,6 +203,18 @@
               (imageCropped)="cardImageCropped($event)"
               (cropperReady)="cardImageCropperReady($event)">
             </image-cropper>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row pt-4 pb-5 ml-2">
+            <div class="flex-column pr-2">
+              <button type="submit" class="btn btn-primary"
+                      [disabled]="!form.valid">
+                Add link
+              </button>
+            </div>
           </div>
         </div>
       </div>

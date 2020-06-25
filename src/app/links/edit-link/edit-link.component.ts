@@ -11,6 +11,8 @@ import {SnackbarService} from '../../shared/snackbar/snackbar.service';
 import {LanguageService} from '../../shared/service/language.service';
 import {CategorySpecification} from '../../shared/model/category-specification';
 import {CategoryService} from '../../shared/service/category.service';
+import {DomSanitizer} from '@angular/platform-browser';
+import {Dimensions, ImageCroppedEvent} from 'ngx-image-cropper';
 
 @Component({
   selector: 'app-edit-link',
@@ -29,11 +31,27 @@ export class EditLinkComponent implements OnInit {
 
   link: Observable<LinkSpecification>;
 
+  loadedLink: LinkSpecification;
+
   languages: Observable<Array<LocaleDescription>>;
 
   categories: Observable<Array<CategorySpecification>>;
 
   form: FormGroup;
+
+  imageFormData: FormData;
+
+  cardImageUrl: any;
+
+  cardImageFile: any = null;
+
+  cardImageWidth = 1;
+
+  cardImageHeight = 1;
+
+  maintainCardImageAspectRatio = false;
+
+  deleteCardImage = false;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -41,7 +59,8 @@ export class EditLinkComponent implements OnInit {
               private snackbar: SnackbarService,
               private linkService: LinkService,
               private languageService: LanguageService,
-              private categoryService: CategoryService) {
+              private categoryService: CategoryService,
+              private sanitizer: DomSanitizer) {
   }
 
   ngOnInit() {
@@ -53,6 +72,11 @@ export class EditLinkComponent implements OnInit {
     this.language = navigator.language || navigator.userLanguage;
     this.languages = this.languageService.getAvailableLanguages(this.language);
     this.categories = this.categoryService.getCategories();
+    this.imageFormData = new FormData();
+  }
+
+  originalCardImageUrl(): string {
+    return this.loadedLink ? this.loadedLink.cardImageUrl : undefined;
   }
 
   buildForm(link: LinkSpecification,
@@ -60,6 +84,8 @@ export class EditLinkComponent implements OnInit {
             availableCategories: Array<CategorySpecification>): FormGroup {
 
     if (this.form === null || this.form === undefined) {
+      this.loadedLink = link;
+      this.cardImageUrl = this.originalCardImageUrl();
       const languageCodes = availableLanguages.map(language => language.locale);
       const selectedLanguage = this.language === null || this.language === undefined || this.language.length < 2
       || languageCodes.indexOf(this.language.substr(0, 2)) < 0
@@ -71,6 +97,7 @@ export class EditLinkComponent implements OnInit {
         blank: [link.blank],
         text: [link.text, Validators.required],
         textTranslations: this.formBuilder.array(this.createTranslationItems(link.textTranslations, selectedLanguage)),
+        displayText: [link.displayText],
         description: [link.description],
         descriptionTranslations: this.formBuilder.array(this.createTranslationItems(link.descriptionTranslations, selectedLanguage)),
         categories: this.formBuilder.array(this.createSelectedCategories(availableCategories, link.categoryIds))
@@ -138,6 +165,45 @@ export class EditLinkComponent implements OnInit {
     this.translations(formArrayName).controls[index].get('languageSelector').setValue(value);
   }
 
+  onToggleDeleteCardImage(event): void {
+    this.imageFormData.delete('cardImage');
+    this.cardImageFile = null;
+    this.cardImageUrl = this.originalCardImageUrl();
+    this.deleteCardImage = event.currentTarget.checked;
+    if (this.deleteCardImage && (this.cardImageUrl === undefined || this.cardImageUrl === null)) {
+      this.deleteCardImage = false;
+    }
+  }
+
+  onCardImageChange(event): void {
+    // console.log(event);
+    this.imageFormData.delete('cardImage');
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      this.cardImageFile = file;
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (e) => {
+        this.cardImageUrl = this.sanitizer.bypassSecurityTrustUrl(e.target.result as string);
+        this.imageFormData.append('cardImage', this.cardImageUrl);
+      };
+    } else {
+      this.cardImageUrl = this.originalCardImageUrl();
+      this.cardImageFile = null;
+    }
+  }
+
+  cardImageCropperReady(dimensions: Dimensions): void {
+    this.cardImageHeight = dimensions.height;
+    this.cardImageWidth = dimensions.width;
+  }
+
+  cardImageCropped(event: ImageCroppedEvent): void {
+    this.imageFormData.delete('cardImage');
+    this.cardImageUrl = event.base64;
+    this.imageFormData.append('cardImage', this.cardImageUrl);
+  }
+
   updateLink(): void {
     const link: LinkSpecification = {
       order: this.form.get('order').value,
@@ -153,6 +219,7 @@ export class EditLinkComponent implements OnInit {
         };
         return translation;
       }),
+      displayText: this.form.get('displayText').value,
       description: this.form.get('description').value,
       descriptionTranslations: this.translations('descriptionTranslations').controls
       .filter(value => value.get('language').value !== '' && value.get('value').value !== '')
@@ -168,9 +235,23 @@ export class EditLinkComponent implements OnInit {
       .map(value => value.get('id').value)
     };
     this.linkService.updateLink(this.id, link)
-    .subscribe(() => {
-      this.router.navigate(['/links'])
-      .then(() => this.snackbar.show('Link successfully updated.'));
+    .subscribe((linkSpec) => {
+      if (this.deleteCardImage) {
+        this.linkService.deleteLinkImages(linkSpec.id, 'cardImage')
+        .subscribe(() => {
+          this.router.navigate(['/links'])
+          .then(() => this.snackbar.show('Link successfully updated.'));
+        });
+      } else if (this.imageFormData.get('cardImage') !== undefined && this.imageFormData.get('cardImage') !== null) {
+        this.linkService.updateLinkImages(linkSpec.id, this.imageFormData)
+        .subscribe(() => {
+          this.router.navigate(['/links'])
+          .then(() => this.snackbar.show('Link successfully updated.'));
+        });
+      } else {
+        this.router.navigate(['/links'])
+        .then(() => this.snackbar.show('Link successfully updated.'));
+      }
     });
   }
 

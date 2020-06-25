@@ -43,6 +43,11 @@ export interface LinkSpecification {
   textTranslations?: Array<Translation>;
 
   /**
+   * Specifies whether link text should be displayed or not.
+   */
+  displayText?: boolean;
+
+  /**
    * The description of the link.
    */
   description?: string;
