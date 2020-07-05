@@ -133,7 +133,6 @@ export class AddLinkComponent implements OnInit {
   }
 
   onCardImageChange(event): void {
-    // console.log(event);
     this.imageFormData.delete('cardImage');
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
@@ -158,10 +157,15 @@ export class AddLinkComponent implements OnInit {
   cardImageCropped(event: ImageCroppedEvent): void {
     this.imageFormData.delete('cardImage');
     this.cardImageUrl = event.base64;
-    this.imageFormData.append('cardImage', this.cardImageUrl);
+
+    const img: Blob = this.convertDataUri(this.cardImageUrl);
+    if (img.size < 262144) {
+      this.imageFormData.append('cardImage', this.cardImageUrl);
+    } else {
+      this.imageFormData.append('cardImage', img, this.cardImageFile.name);
+    }
   }
 
-  /*
   convertDataUri(dataUri): Blob {
     const byteString = atob(dataUri.split(',')[1]);
     const mimeString = dataUri.split(',')[0].split(':')[1].split(';')[0];
@@ -172,7 +176,6 @@ export class AddLinkComponent implements OnInit {
     }
     return new Blob([ab], { type: mimeString });
   }
-  */
 
   addLink(): void {
     const link: LinkSpecification = {

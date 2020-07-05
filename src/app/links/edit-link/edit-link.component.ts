@@ -201,7 +201,24 @@ export class EditLinkComponent implements OnInit {
   cardImageCropped(event: ImageCroppedEvent): void {
     this.imageFormData.delete('cardImage');
     this.cardImageUrl = event.base64;
-    this.imageFormData.append('cardImage', this.cardImageUrl);
+
+    const img: Blob = this.convertDataUri(this.cardImageUrl);
+    if (img.size < 262144) {
+      this.imageFormData.append('cardImage', this.cardImageUrl);
+    } else {
+      this.imageFormData.append('cardImage', img, this.cardImageFile.name);
+    }
+  }
+
+  convertDataUri(dataUri): Blob {
+    const byteString = atob(dataUri.split(',')[1]);
+    const mimeString = dataUri.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
   }
 
   updateLink(): void {
