@@ -1,0 +1,8 @@
+{
+  "realm": "omnis",
+  "auth-server-url": "https://openid.bremersee.org/auth/",
+  "ssl-required": "external",
+  "resource": "home",
+  "public-client": true,
+  "confidential-port": 0
+}
