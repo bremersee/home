@@ -2,3 +2,14 @@
   margin-bottom: 15px;
   margin-top: 15px;
 }
+.edit-badge {
+  background-color: #ffffff;
+  border: 1px solid #e1e4e8;
+  border-radius: 2em;
+  box-shadow: 0 1px 0 rgba(27,31,35,.04);
+  font-size: larger;
+  line-height: 1;
+  padding: 10px;
+  margin-right: -22px;
+  color: #272b30;
+}
