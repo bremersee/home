@@ -176,7 +176,6 @@ export class EditLinkComponent implements OnInit {
   }
 
   onCardImageChange(event): void {
-    // console.log(event);
     this.imageFormData.delete('cardImage');
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
@@ -185,7 +184,7 @@ export class EditLinkComponent implements OnInit {
       reader.readAsDataURL(file);
       reader.onload = (e) => {
         this.cardImageUrl = this.sanitizer.bypassSecurityTrustUrl(e.target.result as string);
-        this.imageFormData.append('cardImage', this.cardImageUrl);
+        this.imageFormData.append('cardImage', this.cardImageFile, this.cardImageUrl.name);
       };
     } else {
       this.cardImageUrl = this.originalCardImageUrl();
@@ -201,13 +200,8 @@ export class EditLinkComponent implements OnInit {
   cardImageCropped(event: ImageCroppedEvent): void {
     this.imageFormData.delete('cardImage');
     this.cardImageUrl = event.base64;
-
     const img: Blob = this.convertDataUri(this.cardImageUrl);
-    if (img.size < 262144) {
-      this.imageFormData.append('cardImage', this.cardImageUrl);
-    } else {
-      this.imageFormData.append('cardImage', img, this.cardImageFile.name);
-    }
+    this.imageFormData.append('cardImage', img, this.cardImageFile.name);
   }
 
   convertDataUri(dataUri): Blob {

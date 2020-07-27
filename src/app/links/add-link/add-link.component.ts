@@ -141,7 +141,7 @@ export class AddLinkComponent implements OnInit {
       reader.readAsDataURL(file);
       reader.onload = (e) => {
         this.cardImageUrl = this.sanitizer.bypassSecurityTrustUrl(e.target.result as string);
-        this.imageFormData.append('cardImage', this.cardImageUrl);
+        this.imageFormData.append('cardImage', this.cardImageFile, this.cardImageFile.name);
       };
     } else {
       this.cardImageUrl = undefined;
@@ -157,13 +157,8 @@ export class AddLinkComponent implements OnInit {
   cardImageCropped(event: ImageCroppedEvent): void {
     this.imageFormData.delete('cardImage');
     this.cardImageUrl = event.base64;
-
     const img: Blob = this.convertDataUri(this.cardImageUrl);
-    if (img.size < 262144) {
-      this.imageFormData.append('cardImage', this.cardImageUrl);
-    } else {
-      this.imageFormData.append('cardImage', img, this.cardImageFile.name);
-    }
+    this.imageFormData.append('cardImage', img, this.cardImageFile.name);
   }
 
   convertDataUri(dataUri): Blob {
