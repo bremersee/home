@@ -7,10 +7,10 @@ pipeline {
     DEV_TAG = 'snapshot'
     PROD_TAG = 'latest'
     DOCKER_CREDENTIALS = credentials('dockerhub')
-    DEV_BUILD = true
-    DEV_DEPLOY = true
-    PROD_BUILD = true
-    PROD_DEPLOY = true
+    DEV_BUILD = false
+    DEV_DEPLOY = false
+    PROD_BUILD = false
+    PROD_DEPLOY = false
   }
   options {
     buildDiscarder(logRotator(numToKeepStr: '8', artifactNumToKeepStr: '8'))
