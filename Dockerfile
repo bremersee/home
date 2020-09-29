@@ -21,7 +21,7 @@ WORKDIR /app
 # install and cache app dependencies
 #COPY package.json /app/package.json
 #RUN npm install
-RUN npm install -g @angular/cli@9.1.7
+RUN npm install -g @angular/cli@10.1.3
 # RUN npm install -g angular-cli-ghpages
 
 # add app
